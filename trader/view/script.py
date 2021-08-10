@@ -29,13 +29,13 @@ def startBot():
     import time
     from trader.view import volat
 
-    from trader.models import Variables
+    from trader.models import Strategy
 
 
 
     while True:
-        vars = Variables.objects.all()[0]
-        volat.attempt(vars)
+        strats = Strategy.objects.all()
+        volat.attempt(strats)
         time.sleep(20)
 
 

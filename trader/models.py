@@ -5,16 +5,15 @@ from django.utils import timezone
 from decimal import Decimal
 
 
-
 class Trades(models.Model):
-    types = models.CharField(max_length=25, null=False, blank=False , verbose_name='Тип')
+    strat = models.CharField(max_length=250, null=False, blank=False, verbose_name='Название')
+    types = models.CharField(max_length=25, null=False, blank=False, verbose_name='Тип')
     price = models.FloatField(null=False, blank=False, verbose_name='Цена')
     amount_usd = models.FloatField(null=False, blank=False, verbose_name='USD')
     amount_eth = models.FloatField(null=False, blank=False, verbose_name='ETH')
     balance_usd = models.FloatField(null=False, blank=False, verbose_name='Баланс USD')
     balance_eth = models.FloatField(null=False, blank=False, verbose_name='Баланс ETH')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Создан')
-
 
     class Meta:
         ordering = ['-created']
@@ -28,14 +27,11 @@ class Trades(models.Model):
         return '%s' % (self.types)
 
 
-
-
-
 class Position(models.Model):
-
-    buy_price=models.FloatField(null=False, blank=False, verbose_name='Покупка')
-    sell_price=models.FloatField(null=True, blank=True, verbose_name='Страйк')
-    amount_eth=models.FloatField(null=True, blank=True, verbose_name='ETH')
+    strat=models.CharField(max_length=250, null=False, blank=False, verbose_name='Название')
+    buy_price = models.FloatField(null=False, blank=False, verbose_name='Покупка')
+    sell_price = models.FloatField(null=True, blank=True, verbose_name='Страйк')
+    amount_eth = models.FloatField(null=True, blank=True, verbose_name='ETH')
     opened = models.DateTimeField(auto_now_add=True, verbose_name='Открыт')
     closed = models.DateTimeField(max_length=50, null=True, blank=True, verbose_name='Закрыт')
     active = models.BooleanField(default='True', verbose_name='Активен')
@@ -53,8 +49,9 @@ class Position(models.Model):
         return '%s' % (self.buy_price)
 
 
-class Variables(models.Model):
-
+class Strategy(models.Model):
+    name = models.CharField(max_length=250, unique=True, null=False, blank=False, verbose_name='Название')
+    exchange = models.CharField(max_length=250, null=False, blank=False, verbose_name='Биржа')
     balance_usd = models.FloatField(null=False, blank=False, verbose_name='USD')
     balance_eth = models.FloatField(null=False, blank=False, verbose_name='ETH')
     step = models.FloatField(null=True, blank=True, verbose_name='Шаг позиции USD')
@@ -62,11 +59,11 @@ class Variables(models.Model):
     profit_percent = models.FloatField(null=True, blank=True, verbose_name='Процент прибыли')
 
     class Meta:
-        verbose_name = "Переменная"
-        verbose_name_plural = "Переменные"
+        verbose_name = "Стратегия"
+        verbose_name_plural = "Стратегии"
 
     def __str__(self):
         """
         String for representing the Model object.
         """
-        return '%s' % (self.balance_usd)
+        return '%s' % (self.name)

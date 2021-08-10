@@ -106,14 +106,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Minsk'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False #отключил для изменения с 12 на 24 часа в DATETIME_FORMAT
 
 USE_TZ = True
 
+DATETIME_FORMAT='j/m/y H:i' #добавил для изменения с 12 на 24 часа
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/

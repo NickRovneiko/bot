@@ -15,7 +15,6 @@ def attempt(strats):
     for exchange in list_exchange:
         currentPrice[exchange] = api.getMarketPrice(exchange)
 
-    ic(currentPrice)
 
     for strat in strats:
         try:

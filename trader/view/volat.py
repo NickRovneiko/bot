@@ -86,7 +86,7 @@ def try_sell(currentPrice, strat):
         pos.sell_price = currentPrice[strat.exchange]
         pos.closed = timezone.now()
         pos.active = False
-        pos.profit = round((pos.sell_price - pos.buy_price) * amount_eth-(pos.sell_price + pos.buy_price) * amount_eth*0.1, 2)
+        pos.profit = round((pos.sell_price - pos.buy_price) * amount_eth-(pos.sell_price + pos.buy_price) * amount_eth*0.001, 2)
         pos.save()
 
         # обновление балансов

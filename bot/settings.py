@@ -25,12 +25,13 @@ SECRET_KEY = '9skkxc(z*+93^a@sjo$7)a&sjsl#qr9%ck(0jkn9h(&^*xq$lf'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['drann.pythonanywhere.com']
+ALLOWED_HOSTS = ['drann.pythonanywhere.com','127.0.0.1']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'trader',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

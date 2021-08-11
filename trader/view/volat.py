@@ -13,7 +13,11 @@ def attempt(strats):
     currentPrice = {}
 
     for exchange in list_exchange:
-        currentPrice[exchange] = api.getMarketPrice(exchange)
+        try:
+            currentPrice[exchange] = api.getMarketPrice(exchange)
+        except:
+            Logs(text=f'ошибка в загрузке цен {exchange}').save()
+
 
     Logs(text=f'тикеры {currentPrice}').save()
 
@@ -63,7 +67,7 @@ def try_buy(currentPrice, strat):
                                 )
 
         # обновление балансов
-        Logs(text=f'''меняю балансы {strat.balance_usd - amount_usd,strat.balance_eth + amount_eth }''')
+        Logs(text=f'''меняю балансы {strat.balance_usd - amount_usd,strat.balance_eth + amount_eth }''').save()
         Strategy.objects.filter(name=strat.name).update(
             balance_usd=strat.balance_usd - amount_usd,
             balance_eth=strat.balance_eth + amount_eth
@@ -108,7 +112,7 @@ def try_sell(currentPrice, strat):
         pos.save()
 
         # обновление балансов
-        Logs(text=f'''меняю балансы {strat.balance_usd + amount_usd, strat.balance_eth - amount_eth}''')
+        Logs(text=f'''меняю балансы {strat.balance_usd + amount_usd, strat.balance_eth - amount_eth}''').save()
         Strategy.objects.filter(name=strat.name).update(
             balance_usd=strat.balance_usd + amount_usd,
             balance_eth=strat.balance_eth - amount_eth

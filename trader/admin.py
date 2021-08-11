@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import TextInput, Textarea
 
-from .models import Trades, Strategy, Position
+from .models import Trades, Strategy, Position, Logs
 
 
 class TradesAdmin(admin.ModelAdmin):
@@ -34,6 +34,14 @@ class PositionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Position, PositionAdmin)
-from django.contrib import admin
 
-# Register your models here.
+class LogsAdmin(admin.ModelAdmin):
+    list_display = ('created', 'text')
+    list_filter = ['created',]
+    search_fields=['text']
+    actions_on_bottom = True
+    actions_on_top = True
+
+
+admin.site.register(Logs, LogsAdmin)
+

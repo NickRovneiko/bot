@@ -12,7 +12,7 @@ def main(request):
         strat.closed = Position.objects.filter(strat=strat.name, active=False).count()
         strat.profit=sum(Position.objects.filter(strat=strat.name, active=False).values_list('profit', flat=True))
         strat.balance_usd=round(strat.balance_usd)
-
+        strat.check=10000 - strat.open * strat.amount
     list_strats.order_by('-profit')
 
 

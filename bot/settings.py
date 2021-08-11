@@ -114,7 +114,7 @@ USE_L10N = False #отключил для изменения с 12 на 24 ча�
 
 USE_TZ = True
 
-DATETIME_FORMAT='j/m/y H:i' #добавил для изменения с 12 на 24 часа
+DATETIME_FORMAT='j/m/y H:i:s' #добавил для изменения с 12 на 24 часа
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/

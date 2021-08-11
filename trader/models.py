@@ -67,3 +67,19 @@ class Strategy(models.Model):
         String for representing the Model object.
         """
         return '%s' % (self.name)
+
+
+class Logs(models.Model):
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Создан')
+    text = models.CharField(max_length=2500, null=False, blank=False, verbose_name='Текст')
+
+
+    class Meta:
+        verbose_name = "Лог"
+        verbose_name_plural = "Логи"
+
+    def __str__(self):
+        """
+        String for representing the Model object.
+        """
+        return '%s' % (self.created)

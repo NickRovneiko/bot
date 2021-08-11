@@ -64,7 +64,7 @@ def try_buy(currentPrice, strat):
 
 
 def try_sell(currentPrice, strat):
-    positions_list = Position.objects.filter(active=True)
+    positions_list = Position.objects.filter(strat=strat.name,active=True)
     pos = positions_list.order_by('sell_price').first()
 
     if currentPrice[strat.exchange] > pos.sell_price:
@@ -76,7 +76,7 @@ def try_sell(currentPrice, strat):
                               types='SELL',
                               price=currentPrice[strat.exchange],
                               amount_usd=amount_usd,
-                              amount_eth=amount_eth,
+                              amount_eth=-amount_eth,
                               balance_usd=strat.balance_usd + amount_usd,
                               balance_eth=strat.balance_eth - amount_eth
                               )

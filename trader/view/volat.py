@@ -28,7 +28,10 @@ def attempt(strats):
         except:
             pass
 
-        try_buy(currentPrice, strat)
+        try:
+            try_buy(currentPrice, strat)
+        except:
+            pass
 
 
 def try_buy(currentPrice, strat):

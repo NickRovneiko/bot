@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 from trader.models import Strategy, Position, Trades
-
+from django.db.models import Sum
 
 
 def main(request):
@@ -11,8 +11,7 @@ def main(request):
         strat.open=Position.objects.filter(strat=strat.name, active=True).count()
         strat.closed = Position.objects.filter(strat=strat.name, active=False).count()
         strat.profit=round(sum(Position.objects.filter(strat=strat.name, active=False).values_list('profit', flat=True)))
-        strat.balance_usd=round(strat.balance_usd)
-        strat.check=10000 - strat.open * strat.amount
+        strat.balance_usd=round(strat.balance_usd - Position.objects.filter(strat=strat.name, active=True).count() * strat.amount +strat.profit)
     list_strats.order_by('-profit')
 
 

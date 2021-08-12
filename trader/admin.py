@@ -7,7 +7,7 @@ from .models import Trades, Strategy, Position, Logs
 
 
 class TradesAdmin(admin.ModelAdmin):
-    list_display = ('strat','types', 'price', 'balance_usd', 'balance_eth', 'created')
+    list_display = ('strat','types', 'price', 'created')
     list_filter = ['strat','types']
     actions_on_bottom = True
     actions_on_top = True
@@ -17,8 +17,8 @@ admin.site.register(Trades, TradesAdmin)
 
 
 class StrategyAdmin(admin.ModelAdmin):
-    list_display = ('name','exchange','balance_usd', 'balance_eth', 'step', 'amount', 'profit_percent')
-    list_editable = ['balance_usd','balance_eth', 'step', 'amount', 'profit_percent']
+    list_display = ('name','exchange','balance_usd', 'step', 'amount', 'profit_percent')
+    list_editable = ['balance_usd', 'step', 'amount', 'profit_percent']
     actions_on_bottom = True
     actions_on_top = True
 

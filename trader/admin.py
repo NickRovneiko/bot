@@ -19,6 +19,7 @@ admin.site.register(Trades, TradesAdmin)
 class StrategyAdmin(admin.ModelAdmin):
     list_display = ('name','exchange','pair','balance_usd', 'step', 'amount', 'profit_percent')
     list_editable = ['pair','balance_usd', 'step', 'amount', 'profit_percent']
+    search_fields = ['name']
     actions_on_bottom = True
     actions_on_top = True
 

@@ -36,7 +36,6 @@ def startBot():
     while True:
         strats = Strategy.objects.all()
         volat.attempt(strats)
-        time.sleep(5)
 
 
 

@@ -44,18 +44,13 @@ def attempt(strats):
 
         # проверка продажи
         try:
-            positions_list = Position.objects.filter(strat=strat.name, active=True)
-            pos = positions_list.order_by('strike').first()
+            positions_list = Position.objects.filter(strat=strat.name, active=True).order_by('strike')
 
-            if price > pos.strike:
-                try_sell(price, strat, pos)
-
-                # а может еще одина позиция закроется ?
-                positions_list = Position.objects.filter(strat=strat.name, active=True)
-                pos = positions_list.order_by('strike').first()
-
+            for pos in positions_list:
                 if price > pos.strike:
                     try_sell(price, strat, pos)
+                else:
+                    break
         except:
             Logs(text=f'ошибка в продаже {strat.name}').save()
 
@@ -127,3 +122,4 @@ def try_sell(price, strat, pos):
         Logs(text=f'закрыл позицию {pos.id, strat.name, pos.sell_price, pos.profit}').save()
     except:
         Logs(text=f' ошибка при закрытии позиции {pos.id, strat.name, pos.sell_price, pos.profit}').save()
+

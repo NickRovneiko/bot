@@ -11,7 +11,7 @@ def attempt(strats):
     # достаем список бирж
     list_markets = set(strats.values_list('exchange', 'pair'))
     currentPrices = {}
-    ic()
+    # ic()
 
     # загружаю цены
     for market in list_markets:
@@ -24,7 +24,7 @@ def attempt(strats):
         except:
             Logs(text=f'ошибка в загрузке цен {market}').save()
 
-    ic(currentPrices['huobi'])
+    # ic(currentPrices['huobi'])
 
     for strat in strats:
 

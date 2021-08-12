@@ -11,6 +11,7 @@ def attempt(strats):
     # достаем список бирж
     list_markets = set(strats.values_list('exchange', 'pair'))
     currentPrices = {}
+    ic()
 
     # загружаю цены
     for market in list_markets:
@@ -39,7 +40,7 @@ def attempt(strats):
 
 
         # проверка баланса
-        if strat.balance_usd - Position.objects.filter(strat=strat.name, active=True).count() * strat.amount-strat.amount < 0:
+        if not check_balance(strat):
             continue
 
         # проверка продажи
@@ -55,19 +56,39 @@ def attempt(strats):
             Logs(text=f'ошибка в продаже {strat.name}').save()
 
         # проверка покупки
-        try:
+        if True:
 
-            positions_list = Position.objects.filter(strat=strat.name, active=True, ).values_list('buy_price',
-                                                                                                  flat=True)
+            positions_list = Position.objects.filter(strat=strat.name, active=True, ).order_by('buy_price')
             min = positions_list.order_by('buy_price').first()
             max = positions_list.order_by('buy_price').last()
 
+            # если это первый ордер
             if not min:
-                min = price + strat.step + 1
-
-            if price < min - strat.step or price > max + strat.step:
                 try_buy(price, strat)
-        except:
+                continue
+
+            # делаем задним числом  вставки на покупку вниз по стакану
+            i=1
+            while price < (min.buy_price-strat.step*i):
+                try_buy(min.buy_price-strat.step*i, strat)
+                i=i+1
+                if not check_balance(strat) or not strat.limit_orders_buy:
+                    continue
+
+            # делаем задним числом  вставки на покупку вверх по стакану
+
+            i=1
+            while price > (max.buy_price+strat.step*i):
+                try_buy((max.buy_price+strat.step*i), strat)
+                i=i+1
+                if not check_balance(strat) or not strat.limit_orders_buy:
+                    continue
+
+
+
+
+
+        else:
             Logs(text=f'ошибка в покупке{strat.name}').save()
 
 
@@ -123,3 +144,11 @@ def try_sell(price, strat, pos):
     except:
         Logs(text=f' ошибка при закрытии позиции {pos.id, strat.name, pos.sell_price, pos.profit}').save()
 
+
+
+def check_balance(strat,):
+    if strat.balance_usd - Position.objects.filter(strat=strat.name,
+                                                active=True).count() * strat.amount - strat.amount < 0:
+        return False
+    else:
+        return True

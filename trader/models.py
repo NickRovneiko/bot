@@ -54,6 +54,7 @@ class Strategy(models.Model):
     balance_usd = models.FloatField(null=False, blank=False, verbose_name='стартовый USD')
     pair = models.CharField(max_length=25,  null=False, blank=False, verbose_name='Пара')
     step = models.FloatField(null=True, blank=True, verbose_name='Шаг позиции')
+    limit_orders_buy = models.BooleanField(default=False, verbose_name='Закупка по лимитам')
     amount = models.FloatField(null=True, blank=True, verbose_name='Сумма сделки')
     profit_percent = models.FloatField(null=True, blank=True, verbose_name='Процент прибыли')
 

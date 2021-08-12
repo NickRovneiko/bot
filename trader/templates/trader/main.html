@@ -47,7 +47,7 @@
             {% for strat in list_strats %}
             <tr>
 
-                <th>{{strat.name}}</th>
+                <th><a href=/admin/trader/strategy/{{strat.id}}/change/>{{strat.name}}</a> {% if strat.limit_orders_buy %} LIMITED {% endif %}</th>
                 <th>{{strat.range}}</th>
                 <th>{{strat.open}}</th>
                 <th>{{strat.closed}}</th>

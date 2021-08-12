@@ -55,7 +55,7 @@ def attempt(strats):
                 strat.exchange] > max + strat.step:
                 try_buy(currentPrice, strat)
         except:
-            Losg(text=f'ошибка в покупке{strat.name}')
+            Losg(text=f'ошибка в покупке{strat.name}').save()
 
 
 def try_buy(currentPrice, strat):

@@ -38,7 +38,7 @@ def attempt(strats):
             if currentPrice[strat.exchange] > pos.strike:
                 try_sell(currentPrice, strat, pos)
         except:
-            Losg(text=f'ошибка в продаже{strat.name}')
+            Losg(text=f'ошибка в продаже{strat.name}').save()
 
         # проверка покупки
         try:

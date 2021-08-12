@@ -28,6 +28,10 @@ def attempt(strats):
 
     for strat in strats:
 
+        # проверка баланса
+        if not check_balance(strat):
+            continue
+
         # без котировки , переключаемся на след стратегию
         if strat.exchange in currentPrices:
             if strat.pair in currentPrices[strat.exchange]:
@@ -39,9 +43,7 @@ def attempt(strats):
 
 
 
-        # проверка баланса
-        if not check_balance(strat):
-            continue
+
 
         # проверка продажи
         try:
@@ -73,7 +75,7 @@ def attempt(strats):
                 try_buy(min.buy_price-strat.step*i, strat)
                 i=i+1
                 if not check_balance(strat) or not strat.limit_orders_buy:
-                    continue
+                    break
 
             # делаем задним числом  вставки на покупку вверх по стакану
 
@@ -82,7 +84,7 @@ def attempt(strats):
                 try_buy((max.buy_price+strat.step*i), strat)
                 i=i+1
                 if not check_balance(strat) or not strat.limit_orders_buy:
-                    continue
+                    break
 
 
 

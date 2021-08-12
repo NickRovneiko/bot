@@ -40,7 +40,6 @@ def attempt(strats):
 
         # проверка баланса
         if strat.balance_usd - Position.objects.filter(strat=strat.name, active=True).count() * strat.amount-strat.amount < 0:
-            Logs(text=f'не хватает денег на {strat.name}').save()
             continue
 
         # проверка продажи
@@ -50,6 +49,13 @@ def attempt(strats):
 
             if price > pos.strike:
                 try_sell(price, strat, pos)
+
+                # а может еще одина позиция закроется ?
+                positions_list = Position.objects.filter(strat=strat.name, active=True)
+                pos = positions_list.order_by('strike').first()
+
+                if price > pos.strike:
+                    try_sell(price, strat, pos)
         except:
             Logs(text=f'ошибка в продаже {strat.name}').save()
 

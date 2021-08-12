@@ -39,7 +39,7 @@ def attempt(strats):
 
 
         # проверка баланса
-        if Position.objects.filter(strat=strat.name, active=True).count() * strat.amount < 0:
+        if strat.balance_usd - Position.objects.filter(strat=strat.name, active=True).count() * strat.amount-strat.amount < 0:
             Logs(text=f'не хватает денег на {strat.name}').save()
             continue
 

@@ -56,7 +56,7 @@ def attempt(strats):
             Logs(text=f'ошибка в продаже {strat.name}').save()
 
         # проверка покупки
-        if True:
+        try:
 
             positions_list = Position.objects.filter(strat=strat.name, active=True, ).order_by('buy_price')
             min = positions_list.order_by('buy_price').first()
@@ -88,7 +88,7 @@ def attempt(strats):
 
 
 
-        else:
+        except:
             Logs(text=f'ошибка в покупке{strat.name}').save()
 
 
@@ -103,8 +103,8 @@ def try_buy(price, strat):
                                   amount_usd=-amount_usd,
                                   amount_eth=amount_eth
                                   )
-    Logs(
-        text=f'создал трейд {trade.id, strat.name} - "BUY"- {trade.price, -amount_usd, amount_eth,}').save()
+    # Logs(
+    #     text=f'создал трейд {trade.id, strat.name} - "BUY"- {trade.price, -amount_usd, amount_eth,}').save()
 
     # открытие позиции
     position = Position.objects.create(strat=strat.name,
@@ -112,8 +112,8 @@ def try_buy(price, strat):
                                        strike=round(price + price * (strat.profit_percent / 100), 2),
                                        amount_eth=amount_eth
                                        )
-    Logs(
-        text=f'''создал позицию {position.id, position.strat, position.buy_price, position.strike, amount_eth}''').save()
+    # Logs(
+    #     text=f'''создал позицию {position.id, position.strat, position.buy_price, position.strike, amount_eth}''').save()
 
 
 def try_sell(price, strat, pos):
@@ -127,8 +127,8 @@ def try_sell(price, strat, pos):
                                   amount_usd=amount_usd,
                                   amount_eth=-amount_eth,
                                   )
-    Logs(
-        text=f'''создал трейд {trade.id, trade.strat} - "SELL"- {trade.price, amount_usd, -amount_eth}''').save()
+    # Logs(
+    #     text=f'''создал трейд {trade.id, trade.strat} - "SELL"- {trade.price, amount_usd, -amount_eth}''').save()
 
     # закрытие позиции
     try:
@@ -140,7 +140,7 @@ def try_sell(price, strat, pos):
             (pos.sell_price - pos.buy_price) * amount_eth - (pos.sell_price + pos.buy_price) * amount_eth * 0.001, 2)
         pos.save()
 
-        Logs(text=f'закрыл позицию {pos.id, strat.name, pos.sell_price, pos.profit}').save()
+        # Logs(text=f'закрыл позицию {pos.id, strat.name, pos.sell_price, pos.profit}').save()
     except:
         Logs(text=f' ошибка при закрытии позиции {pos.id, strat.name, pos.sell_price, pos.profit}').save()
 

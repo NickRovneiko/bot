@@ -59,6 +59,7 @@ class Strategy(models.Model):
     profit_percent = models.FloatField(null=True, blank=True, verbose_name='Процент прибыли')
 
     class Meta:
+        ordering=['name']
         verbose_name = "Стратегия"
         verbose_name_plural = "Стратегии"
 

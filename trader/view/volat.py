@@ -9,21 +9,34 @@ from django.utils import timezone
 
 def attempt(strats):
     # достаем список бирж
-    list_exchange = set(strats.values_list('exchange', flat=True))
-    currentPrice = {}
+    list_markets = set(strats.values_list('exchange', 'pair'))
+    currentPrices = {}
 
     # загружаю цены
-    for exchange in list_exchange:
-        if True:
-            currentPrice[exchange] = api.getMarketPrice(exchange)
-        else:
-            Logs(text=f'ошибка в загрузке цен {exchange}').save()
+    for market in list_markets:
+        if market[0] not in currentPrices:
+            currentPrices[market[0]]={}
+
+        try:
+
+            currentPrices[market[0]].update(api.getMarketPrice(market[0], market[1]))
+        except:
+            Logs(text=f'ошибка в загрузке цен {market}').save()
+
+    ic(currentPrices['huobi'])
 
     for strat in strats:
 
         # без котировки , переключаемся на след стратегию
-        if strat.exchange not in currentPrice:
+        if strat.exchange in currentPrices:
+            if strat.pair in currentPrices[strat.exchange]:
+                price = currentPrices[strat.exchange][strat.pair]
+            else:
+                continue
+        else:
             continue
+
+
 
         # проверка баланса
         if Position.objects.filter(strat=strat.name, active=True).count() * strat.amount < 0:
@@ -35,10 +48,10 @@ def attempt(strats):
             positions_list = Position.objects.filter(strat=strat.name, active=True)
             pos = positions_list.order_by('strike').first()
 
-            if currentPrice[strat.exchange] > pos.strike:
-                try_sell(currentPrice, strat, pos)
+            if price > pos.strike:
+                try_sell(price, strat, pos)
         except:
-            Losg(text=f'ошибка в продаже{strat.name}').save()
+            Logs(text=f'ошибка в продаже {strat.name}').save()
 
         # проверка покупки
         try:
@@ -49,23 +62,22 @@ def attempt(strats):
             max = positions_list.order_by('buy_price').last()
 
             if not min:
-                min = currentPrice[strat.exchange] + strat.step + 1
+                min = price + strat.step + 1
 
-            if currentPrice[strat.exchange] and currentPrice[strat.exchange] < min - strat.step or currentPrice[
-                strat.exchange] > max + strat.step:
-                try_buy(currentPrice, strat)
+            if price < min - strat.step or price > max + strat.step:
+                try_buy(price, strat)
         except:
-            Losg(text=f'ошибка в покупке{strat.name}').save()
+            Logs(text=f'ошибка в покупке{strat.name}').save()
 
 
-def try_buy(currentPrice, strat):
+def try_buy(price, strat):
     # покупка
     amount_usd = round(strat.amount)
-    amount_eth = round(strat.amount / currentPrice[strat.exchange], 6)
+    amount_eth = round(strat.amount / price, 6)
 
     trade = Trades.objects.create(strat=strat.name,
                                   types='BUY',
-                                  price=currentPrice[strat.exchange],
+                                  price=price,
                                   amount_usd=-amount_usd,
                                   amount_eth=amount_eth
                                   )
@@ -74,39 +86,38 @@ def try_buy(currentPrice, strat):
 
     # открытие позиции
     position = Position.objects.create(strat=strat.name,
-                                       buy_price=currentPrice[strat.exchange],
-                                       strike=round(currentPrice[strat.exchange] + currentPrice[strat.exchange] * (
-                                               strat.profit_percent / 100), 2),
+                                       buy_price=price,
+                                       strike=round(price + price * (strat.profit_percent / 100), 2),
                                        amount_eth=amount_eth
                                        )
-    Logs(text=f'''создал позицию {position.id, position.strat, position.buy_price, position.strike, amount_eth}''').save()
+    Logs(
+        text=f'''создал позицию {position.id, position.strat, position.buy_price, position.strike, amount_eth}''').save()
 
 
-def try_sell(currentPrice, strat, pos):
+def try_sell(price, strat, pos):
     # продажа
-    amount_usd = round(pos.amount_eth * currentPrice[strat.exchange], 2)
+    amount_usd = round(pos.amount_eth * price, 2)
     amount_eth = pos.amount_eth
 
-
-    trade=Trades.objects.create(strat=strat.name,
-                          types='SELL',
-                          price=currentPrice[strat.exchange],
-                          amount_usd=amount_usd,
-                          amount_eth=-amount_eth,
-                          )
+    trade = Trades.objects.create(strat=strat.name,
+                                  types='SELL',
+                                  price=price,
+                                  amount_usd=amount_usd,
+                                  amount_eth=-amount_eth,
+                                  )
     Logs(
-        text=f'''создал трейд {trade.id,trade.strat} - "SELL"- {trade.price,amount_usd,-amount_eth}''').save()
+        text=f'''создал трейд {trade.id, trade.strat} - "SELL"- {trade.price, amount_usd, -amount_eth}''').save()
 
     # закрытие позиции
     try:
         pos.strat = strat.name
-        pos.sell_price = currentPrice[strat.exchange]
+        pos.sell_price = price
         pos.closed = timezone.now()
         pos.active = False
         pos.profit = round(
             (pos.sell_price - pos.buy_price) * amount_eth - (pos.sell_price + pos.buy_price) * amount_eth * 0.001, 2)
         pos.save()
 
-        Logs(text=f'закрыл позицию {pos.id, strat.name, pos.sell_price,pos.profit}').save()
+        Logs(text=f'закрыл позицию {pos.id, strat.name, pos.sell_price, pos.profit}').save()
     except:
-        Logs(text=f' ошибка при закрытии позиции {pos.id, strat.name, pos.sell_price,pos.profit}').save()
+        Logs(text=f' ошибка при закрытии позиции {pos.id, strat.name, pos.sell_price, pos.profit}').save()

@@ -52,8 +52,9 @@ class Strategy(models.Model):
     name = models.CharField(max_length=250, unique=True, null=False, blank=False, verbose_name='Название')
     exchange = models.CharField(max_length=250, null=False, blank=False, verbose_name='Биржа')
     balance_usd = models.FloatField(null=False, blank=False, verbose_name='стартовый USD')
-    step = models.FloatField(null=True, blank=True, verbose_name='Шаг позиции USD')
-    amount = models.FloatField(null=True, blank=True, verbose_name='Сумма сделки USD')
+    pair = models.CharField(max_length=25,  null=False, blank=False, verbose_name='Пара')
+    step = models.FloatField(null=True, blank=True, verbose_name='Шаг позиции')
+    amount = models.FloatField(null=True, blank=True, verbose_name='Сумма сделки')
     profit_percent = models.FloatField(null=True, blank=True, verbose_name='Процент прибыли')
 
     class Meta:

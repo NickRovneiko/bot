@@ -17,8 +17,8 @@ admin.site.register(Trades, TradesAdmin)
 
 
 class StrategyAdmin(admin.ModelAdmin):
-    list_display = ('name','exchange','balance_usd', 'step', 'amount', 'profit_percent')
-    list_editable = ['balance_usd', 'step', 'amount', 'profit_percent']
+    list_display = ('name','exchange','pair','balance_usd', 'step', 'amount', 'profit_percent')
+    list_editable = ['pair','balance_usd', 'step', 'amount', 'profit_percent']
     actions_on_bottom = True
     actions_on_top = True
 
@@ -27,7 +27,7 @@ admin.site.register(Strategy, StrategyAdmin)
 
 
 class PositionAdmin(admin.ModelAdmin):
-    list_display = ('strat','buy_price', 'sell_price', 'opened', 'closed', 'profit', 'active')
+    list_display = ('strat','buy_price','strike','sell_price', 'opened', 'closed', 'profit', 'active')
     list_filter = ['strat','active']
     actions_on_bottom = True
     actions_on_top = True

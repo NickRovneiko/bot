@@ -16,7 +16,9 @@ def main(request):
         strat.profit=round(sum(Position.objects.filter(strat=strat.name, active=False).values_list('profit', flat=True)))
         strat.balance=round(strat.balance_usd - Position.objects.filter(strat=strat.name, active=True).count() * strat.amount +strat.profit)
         strat.range=round(strat.balance_usd/strat.amount*strat.step,1)
-        strat.start=Position.objects.filter(strat=strat.name).order_by('opened').first().opened
+        if Position.objects.filter(strat=strat.name).exists():
+            strat.opened=Position.objects.filter(strat=strat.name).order_by('opened').first().opened
+
 
         if strat.balance>strat.amount:
             active_list_strats.append(strat)

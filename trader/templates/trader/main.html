@@ -64,6 +64,41 @@
 
 
         </table>
+        <p>
+        <br>
+         <table class="table table-striped table-sm" style="font-size:.7em">
+            <thead>
+            <tr>
+                <th>Название</th>
+                <th>Диапазон колебания цены</th>
+                <th>Открытых</th>
+                <th>Закрытых</th>
+                <th>Баланс</th>
+                <th>Прибыль</th>
+
+
+            </tr>
+            <tbody>
+            {% for strat in stop_list_strats %}
+            <tr>
+
+                <th><a href=/admin/trader/strategy/{{strat.id}}/change/>{{strat.name}}</a> {% if strat.limit_orders_buy %} LIMITED {% endif %}</th>
+                <th>{{strat.range}}</th>
+                <th>{{strat.open}}</th>
+                <th>{{strat.closed}}</th>
+                <th>{{strat.balance}}<small>
+                <th>{{strat.profit}}</th>
+
+
+            </tr>
+            {% endfor %}
+
+            </tbody>
+
+            </thead>
+
+
+        </table>
     </div>
 
     <div class="container-fluid">

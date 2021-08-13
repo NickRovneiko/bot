@@ -28,9 +28,7 @@ def attempt(strats):
 
     for strat in strats:
 
-        # проверка баланса
-        if not check_balance(strat):
-            continue
+
 
         # без котировки , переключаемся на след стратегию
         if strat.exchange in currentPrices:
@@ -56,6 +54,10 @@ def attempt(strats):
                     break
         except:
             Logs(text=f'ошибка в продаже {strat.name}').save()
+
+            # проверка баланса
+            if not check_balance(strat):
+                continue
 
         # проверка покупки
         try:

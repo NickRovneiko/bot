@@ -137,6 +137,14 @@ def try_sell(price, strat, pos):
     # закрытие позиции
     try:
         pos.strat = strat.name
+
+        # если лимитный ордер,  то закрытие по страйку
+        if strat.limit_orders_buy:
+            pos.sell_price = pos.strike
+        else:
+            pos.sell_price = price
+
+
         pos.sell_price = price
         pos.closed = timezone.now()
         pos.active = False

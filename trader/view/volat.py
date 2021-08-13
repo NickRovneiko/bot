@@ -55,8 +55,8 @@ def attempt(strats):
         except:
             Logs(text=f'ошибка в продаже {strat.name}').save()
 
-            # проверка баланса
-            if not check_balance(strat):
+        # проверка баланса
+        if not check_balance(strat):
                 continue
 
         # проверка покупки

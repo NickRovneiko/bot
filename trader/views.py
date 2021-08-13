@@ -23,7 +23,6 @@ def main(request):
         else:
             stop_list_strats.append(strat)
 
-
     return render(request, 'trader/main.html',
                   {'list_strats':active_list_strats,
                    'stop_list_strats':stop_list_strats})

@@ -50,8 +50,8 @@
 
                 <th><a href=/admin/trader/strategy/{{strat.id}}/change/>{{strat.name}}</a> {% if strat.limit_orders_buy %} LIMITED {% endif %}</th>
                 <th>{{strat.range}}</th>
-                <th>{{strat.open}}</th>
-                <th>{{strat.closed}}</th>
+                <th><a href="/admin/trader/position/?o=-8.-5&strat={{strat.name}}">{{strat.open}}</a></th>
+                <th><a href="/admin/trader/trades/?o=-8.-5&strat={{strat.name}}">{{strat.closed}}</a></th>
                 <th>{{strat.balance}}<small>
                 <th><small>{{strat.start}}</small> </th>
                 <th>{{strat.profit}}</th>
@@ -88,8 +88,8 @@
 
                 <th><a href=/admin/trader/strategy/{{strat.id}}/change/>{{strat.name}}</a> {% if strat.limit_orders_buy %} LIMITED {% endif %}</th>
                 <th>{{strat.range}}</th>
-                <th>{{strat.open}}</th>
-                <th>{{strat.closed}}</th>
+                <th><a href="/admin/trader/position/?o=-8.-5&strat={{strat.name}}">{{strat.open}}</a></th>
+                <th><a href="/admin/trader/trades/?o=-8.-5&strat={{strat.name}}">{{strat.closed}}</a></th>
                 <th>{{strat.balance}}<small>
                 <th><small>{{strat.start}}</small> </th>
                 <th>{{strat.profit}}</th>

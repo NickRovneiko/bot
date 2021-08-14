@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import TextInput, Textarea
 
-from .models import Trades, Strategy, Position, Logs
+from .models import Trades, Strategy, Position, Logs, History
 
 
 class TradesAdmin(admin.ModelAdmin):
@@ -45,4 +45,13 @@ class LogsAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Logs, LogsAdmin)
+
+class HistoryAdmin(admin.ModelAdmin):
+    list_display = ('timestamp','exchange', 'pair', 'high', 'low')
+    list_filter = ['exchange', 'pair']
+    actions_on_bottom = True
+    actions_on_top = True
+
+
+admin.site.register(History, HistoryAdmin)
 

@@ -26,7 +26,7 @@ class Trades(models.Model):
 
 
 class Position(models.Model):
-    strat=models.CharField(max_length=250, null=False, blank=False, verbose_name='Название')
+    strat = models.CharField(max_length=250, null=False, blank=False, verbose_name='Название')
     buy_price = models.FloatField(null=False, blank=False, verbose_name='Покупка')
     sell_price = models.FloatField(null=True, blank=True, verbose_name='Продажа')
     strike = models.FloatField(null=True, blank=True, verbose_name='Страйк')
@@ -52,14 +52,14 @@ class Strategy(models.Model):
     name = models.CharField(max_length=250, unique=True, null=False, blank=False, verbose_name='Название')
     exchange = models.CharField(max_length=250, null=False, blank=False, verbose_name='Биржа')
     balance_usd = models.FloatField(null=False, blank=False, verbose_name='стартовый USD')
-    pair = models.CharField(max_length=25,  null=False, blank=False, verbose_name='Пара')
+    pair = models.CharField(max_length=25, null=False, blank=False, verbose_name='Пара')
     step = models.FloatField(null=True, blank=True, verbose_name='Шаг позиции')
     limit_orders_buy = models.BooleanField(default=False, verbose_name='Закупка по лимитам')
     amount = models.FloatField(null=True, blank=True, verbose_name='Сумма сделки')
     profit_percent = models.FloatField(null=True, blank=True, verbose_name='Процент прибыли')
 
     class Meta:
-        ordering=['name']
+        ordering = ['name']
         verbose_name = "Стратегия"
         verbose_name_plural = "Стратегии"
 
@@ -74,7 +74,6 @@ class Logs(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name='Создан')
     text = models.CharField(max_length=2500, null=False, blank=False, verbose_name='Текст')
 
-
     class Meta:
         verbose_name = "Лог"
         verbose_name_plural = "Логи"
@@ -84,3 +83,26 @@ class Logs(models.Model):
         String for representing the Model object.
         """
         return '%s' % (self.created)
+
+
+class History(models.Model):
+    exchange = models.CharField(max_length=250, null=False, blank=False, verbose_name='Биржа')
+    pair = models.CharField(max_length=25, null=False, blank=False, verbose_name='Пара')
+    timestamp = models.IntegerField(null=False, verbose_name='Время')
+    open = models.DecimalField(max_digits=12, decimal_places=4, null=False)
+    high = models.DecimalField(max_digits=12, decimal_places=4, null=False)
+    low = models.DecimalField(max_digits=12, decimal_places=4, null=False)
+    close = models.DecimalField(max_digits=12, decimal_places=4, null=False)
+    volume = models.DecimalField(max_digits=14, decimal_places=4, null=False)
+
+    class Meta:
+        ordering = ['timestamp']
+        unique_together = ('exchange', 'pair', 'timestamp')
+        verbose_name = "Чарт"
+        verbose_name_plural = "Чарты"
+
+    def __str__(self):
+        """
+        String for representing the Model object.
+        """
+        return '%s' % (self.exchange)

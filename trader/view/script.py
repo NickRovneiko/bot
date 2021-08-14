@@ -13,12 +13,6 @@ if project_home not in sys.path:
 # set environment variable to tell django where your settings.py is
 os.environ['DJANGO_SETTINGS_MODULE'] = 'bot.settings'
 
-
-# serve django via WSGI
-from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
-
-
 django.setup()
 
 

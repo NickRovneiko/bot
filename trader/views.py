@@ -35,18 +35,14 @@ def main(request):
 def update_server(request):
     import git
     if True:
-        ic()
         try:
             repo = git.Repo('/home/drann/bot')
         except:
-            ic()
             repo = git.Repo('/Users/user/bot/')
-        ic()
         origin = repo.remotes.origin
 
         origin.pull()
 
         return HttpResponse('Updated PythonAnywhere successfully', 200)
     else:
-        ic()
         return HttpResponse('Wrong event type', 400)

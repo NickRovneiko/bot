@@ -1,7 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, HttpResponse
 
-from trader.models import Strategy, Position, Trades
-from django.db.models import Sum
+from trader.models import Strategy, Position
+
+from icecream import ic
+
 
 
 def main(request):
@@ -18,6 +20,7 @@ def main(request):
         strat.range=round(strat.balance_usd/strat.amount*strat.step,1)
         if Position.objects.filter(strat=strat.name).exists():
             strat.opened=Position.objects.filter(strat=strat.name).order_by('opened').first().opened
+            ic(strat.opened)
 
 
         if strat.balance>strat.amount:
@@ -28,3 +31,22 @@ def main(request):
     return render(request, 'trader/main.html',
                   {'list_strats':active_list_strats,
                    'stop_list_strats':stop_list_strats})
+
+def update_server(request):
+    import git
+    if True:
+        ic()
+        try:
+            repo = git.Repo('/home/drann/bot')
+        except:
+            ic()
+            repo = git.Repo('/Users/user/bot/')
+        ic()
+        origin = repo.remotes.origin
+
+        origin.pull()
+
+        return HttpResponse('Updated PythonAnywhere successfully', 200)
+    else:
+        ic()
+        return HttpResponse('Wrong event type', 400)

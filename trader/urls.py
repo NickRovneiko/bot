@@ -3,4 +3,5 @@ from django.conf.urls import url
 
 urlpatterns = [
     url(r'^$', views.main),
+    url('update_server', views.update_server)
 ]

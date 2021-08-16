@@ -2,15 +2,15 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-from decimal import Decimal
+
 
 
 class Trades(models.Model):
     strat = models.CharField(max_length=250, null=False, blank=False, verbose_name='Название')
     types = models.CharField(max_length=25, null=False, blank=False, verbose_name='Тип')
-    price = models.FloatField(null=False, blank=False, verbose_name='Цена')
-    amount_usd = models.FloatField(null=False, blank=False, verbose_name='USD')
-    amount_eth = models.FloatField(null=False, blank=False, verbose_name='ETH')
+    price = models.DecimalField(max_digits=12, decimal_places=4, null='Цена')
+    amount_usd =models.DecimalField(max_digits=12, decimal_places=4, null='USD')
+    amount_eth = models.DecimalField(max_digits=12, decimal_places=6, null='ETH')
     created = models.DateTimeField(auto_now_add=True, verbose_name='Создан')
 
     class Meta:
@@ -26,15 +26,15 @@ class Trades(models.Model):
 
 
 class Position(models.Model):
-    strat = models.CharField(max_length=250, null=False, blank=False, verbose_name='Название')
-    buy_price = models.FloatField(null=False, blank=False, verbose_name='Покупка')
-    sell_price = models.FloatField(null=True, blank=True, verbose_name='Продажа')
-    strike = models.FloatField(null=True, blank=True, verbose_name='Страйк')
-    amount_eth = models.FloatField(null=True, blank=True, verbose_name='ETH')
-    opened = models.DateTimeField(auto_now_add=True, verbose_name='Открыт')
-    closed = models.DateTimeField(max_length=50, null=True, blank=True, verbose_name='Закрыт')
+    varian = models.CharField(max_length=250, null=False, blank=False, verbose_name='Вариант')
+    buy_price = models.DecimalField(max_digits=12, decimal_places=6,null=False, blank=False, verbose_name='Покупка')
+    sell_price = models.DecimalField(max_digits=12, decimal_places=6,null=True, blank=True, verbose_name='Продажа')
+    strike = models.DecimalField(max_digits=12, decimal_places=6,null=True, blank=True, verbose_name='Страйк')
+    amount_eth = models.DecimalField(max_digits=12, decimal_places=6,null=True, blank=True, verbose_name='ETH')
+    opened = models.IntegerField(null=False, verbose_name='Открыт')
+    closed = models.IntegerField(null=True, verbose_name='Закрыт')
     active = models.BooleanField(default='True', verbose_name='Активен')
-    profit = models.FloatField(null=True, blank=True, verbose_name='Прибыль')
+    profit = models.DecimalField(max_digits=12, decimal_places=6,null=True, blank=True, verbose_name='Прибыль')
 
     class Meta:
         ordering = ['-opened']
@@ -48,20 +48,21 @@ class Position(models.Model):
         return '%s' % (self.buy_price)
 
 
-class Strategy(models.Model):
+class Variants(models.Model):
     name = models.CharField(max_length=250, unique=True, null=False, blank=False, verbose_name='Название')
+    type=models.CharField(max_length=250, null=False, blank=False, verbose_name='Тип')
     exchange = models.CharField(max_length=250, null=False, blank=False, verbose_name='Биржа')
-    balance_usd = models.FloatField(null=False, blank=False, verbose_name='стартовый USD')
+    balance_usd = models.DecimalField(max_digits=12, decimal_places=2,null=False, blank=False, verbose_name='стартовый USD')
     pair = models.CharField(max_length=25, null=False, blank=False, verbose_name='Пара')
-    step = models.FloatField(null=True, blank=True, verbose_name='Шаг позиции')
+    step = models.DecimalField(max_digits=12, decimal_places=2,null=True, blank=True, verbose_name='Шаг позиции')
     limit_orders_buy = models.BooleanField(default=False, verbose_name='Закупка по лимитам')
-    amount = models.FloatField(null=True, blank=True, verbose_name='Сумма сделки')
-    profit_percent = models.FloatField(null=True, blank=True, verbose_name='Процент прибыли')
+    amount = models.DecimalField(max_digits=12, decimal_places=2,null=True, blank=True, verbose_name='Сумма сделки')
+    profit_percent = models.DecimalField(max_digits=12, decimal_places=2,null=True, blank=True, verbose_name='Процент прибыли')
 
     class Meta:
         ordering = ['name']
-        verbose_name = "Стратегия"
-        verbose_name_plural = "Стратегии"
+        verbose_name = "Вариант"
+        verbose_name_plural = "Варианты"
 
     def __str__(self):
         """
@@ -97,12 +98,34 @@ class History(models.Model):
 
     class Meta:
         ordering = ['timestamp']
-        unique_together = ('exchange', 'pair', 'timestamp')
-        verbose_name = "Чарт"
-        verbose_name_plural = "Чарты"
+        # unique_together = ('exchange', 'pair', 'timestamp')
+        verbose_name = "Котировка"
+        verbose_name_plural = "Котировки"
 
     def __str__(self):
         """
         String for representing the Model object.
         """
         return '%s' % (self.exchange)
+
+
+class Strategies(models.Model):
+    name = models.CharField(max_length=250, unique=True, null=False, blank=False, verbose_name='Название')
+    choiceStatus = (
+        ('Pending', 'Неактивна'),
+        ('Testing', 'Бэктест'),
+        ('Online', 'Онлайн')
+    )
+    status = models.CharField(max_length=50, default='Pending', choices=choiceStatus, verbose_name='Статус')
+    variants = models.CharField(max_length=50, verbose_name='Варианты')
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = "Стратегия"
+        verbose_name_plural = "Стратегии"
+
+    def __str__(self):
+        """
+        String for representing the Model object.
+        """
+        return '%s' % (self.name)

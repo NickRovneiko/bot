@@ -28,6 +28,9 @@
     </ul>
 </nav>
 
+{% if ask_delete %}
+<a href=/trader&del={{strat.name}}&ask_delete={{strat.name}}/>Удалить вариант {{ask_delete}} </a>
+{% endif %}
 
 <div class="text-center">
     <div class="container">
@@ -41,6 +44,7 @@
                 <th>Баланс</th>
                 <th>Создана</th>
                 <th>Прибыль</th>
+                <th>Действия</th>
 
 
             </tr>
@@ -50,11 +54,12 @@
 
                 <th><a href=/admin/trader/strategy/{{strat.id}}/change/>{{strat.name}}</a> {% if strat.limit_orders_buy %} LIMITED {% endif %}</th>
                 <th>{{strat.range}}</th>
-                <th><a href="/admin/trader/position/?o=-8.-5&strat={{strat.name}}">{{strat.open}}</a></th>
-                <th><a href="/admin/trader/trades/?o=-8.-5&strat={{strat.name}}">{{strat.closed}}</a></th>
+                <th><a href="/admin/trader/position/?o=-8.-5&strat={{strat.name}}/">{{strat.open}}</a></th>
+                <th><a href="/admin/trader/trades/?o=-8.-5&strat={{strat.name}}/">{{strat.closed}}</a></th>
                 <th>{{strat.balance}}<small>
                 <th><small>{{strat.opened}}</small> </th>
-                <th>{{strat.profit}}</th>
+                <th>{{strat.profit}}
+                <th><a href=/trader&del={{strat.name}}/>Удалить</a></th>
 
 
             </tr>

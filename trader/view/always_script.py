@@ -1,8 +1,6 @@
 import os
 import django
 
-from icecream import ic
-
 import sys
 
 # add your project directory to the sys.path
@@ -20,18 +18,10 @@ django.setup()
 
 
 def startBot():
-    import time
-    from trader.view import volat
-
-    from trader.models import Strategy
-
-
+    from trader.view import engine
 
     while True:
-        strats = Strategy.objects.all()
-        volat.attempt(strats)
-
-
+        engine.attempt()
 
 
 if __name__ == '__main__':

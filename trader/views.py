@@ -1,36 +1,54 @@
 from django.shortcuts import render, HttpResponse
 
-from trader.models import Strategy, Position
+from trader.models import Variants, Position
 
 from icecream import ic
+from datetime import datetime
+
+from .view import engine
+
+
 
 
 
 def main(request):
-    list_strats=Strategy.objects.all()
+    ask_delete=False
+    if request.GET.get('del'):
+        ic()
+        if request.GET.get('ask_delete'):
+            ic()
+            engine.delete_varian(request)
+        else:
+            ic()
+            ask_delete=request.GET.get('del')
+
+
+    list_varian=Variants.objects.all()
 
     active_list_strats=[]
     stop_list_strats=[]
 
-    for strat in list_strats:
-        strat.open=Position.objects.filter(strat=strat.name, active=True).count()
-        strat.closed = Position.objects.filter(strat=strat.name, active=False).count()
-        strat.profit=round(sum(Position.objects.filter(strat=strat.name, active=False).values_list('profit', flat=True)))
-        strat.balance=round(strat.balance_usd - Position.objects.filter(strat=strat.name, active=True).count() * strat.amount +strat.profit)
-        strat.range=round(strat.balance_usd/strat.amount*strat.step,1)
-        if Position.objects.filter(strat=strat.name).exists():
-            strat.opened=Position.objects.filter(strat=strat.name).order_by('opened').first().opened
-            ic(strat.opened)
+    for varian in list_varian:
+        varian.open=Position.objects.filter(varian=varian.name, active=True).count()
+        varian.closed = Position.objects.filter(varian=varian.name, active=False).count()
+        varian.profit=round(sum(Position.objects.filter(varian=varian.name, active=False).values_list('profit', flat=True)))
+        varian.balance=round(varian.balance_usd - Position.objects.filter(varian=varian.name, active=True).count() * varian.amount +varian.profit)
+        varian.range=round(varian.balance_usd/varian.amount*varian.step,1)
+        if Position.objects.filter(varian=varian.name).exists():
+            varian.opened=Position.objects.filter(varian=varian.name).order_by('opened').first().opened
+            varian.opened= datetime.fromtimestamp(varian.opened/1000).strftime('%Y-%m-%d %H:%M')
 
 
-        if strat.balance>strat.amount:
-            active_list_strats.append(strat)
+
+        if varian.balance>varian.amount:
+            active_list_strats.append(varian)
         else:
-            stop_list_strats.append(strat)
+            stop_list_strats.append(varian)
 
     return render(request, 'trader/main.html',
                   {'list_strats':active_list_strats,
-                   'stop_list_strats':stop_list_strats})
+                   'stop_list_strats':stop_list_strats,
+                   'ask_delete':ask_delete})
 
 def update_server(request):
     import git

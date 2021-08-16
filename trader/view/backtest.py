@@ -109,12 +109,11 @@ def download_ohlcv(start=1625097600000, end=int(datetime.now().timestamp() * 100
 
     def startBot():
         ic()
-        import time
-        from trader.view import volat
+        from trader.view.Strateg import volat
 
-        from trader.models import Strategy
+        from trader.models import Variants
 
-        strats = Strategy.objects.all()
+        strats = Variants.objects.all()
         volat.backtest_all(strats)
 
     startBot()

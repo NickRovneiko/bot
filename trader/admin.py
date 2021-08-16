@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import TextInput, Textarea
 
-from .models import Trades, Strategy, Position, Logs, History
+from .models import Trades, Variants, Position, Logs, History, Strategies
 
 
 class TradesAdmin(admin.ModelAdmin):
@@ -16,20 +16,21 @@ class TradesAdmin(admin.ModelAdmin):
 admin.site.register(Trades, TradesAdmin)
 
 
-class StrategyAdmin(admin.ModelAdmin):
+class VariantsAdmin(admin.ModelAdmin):
     list_display = ('name','exchange','pair','balance_usd', 'step','limit_orders_buy', 'amount', 'profit_percent')
-    list_editable = ['pair','balance_usd', 'step','limit_orders_buy', 'amount', 'profit_percent']
+    list_editable = ['exchange','pair','balance_usd', 'step','limit_orders_buy', 'amount', 'profit_percent']
     search_fields = ['name']
     actions_on_bottom = True
     actions_on_top = True
 
 
-admin.site.register(Strategy, StrategyAdmin)
+admin.site.register(Variants, VariantsAdmin)
 
 
 class PositionAdmin(admin.ModelAdmin):
-    list_display = ('strat','buy_price','strike','sell_price', 'opened', 'closed', 'profit', 'active')
-    list_filter = ['strat','active']
+    list_display = ('varian','buy_price','strike','sell_price', 'opened', 'closed', 'profit', 'active')
+    list_filter = ['varian','active']
+    search_fields = ['buy_price', 'sell_price', 'opened', 'closed']
     actions_on_bottom = True
     actions_on_top = True
 
@@ -47,11 +48,21 @@ class LogsAdmin(admin.ModelAdmin):
 admin.site.register(Logs, LogsAdmin)
 
 class HistoryAdmin(admin.ModelAdmin):
-    list_display = ('timestamp','exchange', 'pair', 'high', 'low')
+    list_display = ('timestamp','exchange', 'pair','open', 'high', 'low')
     list_filter = ['exchange', 'pair']
+    search_fields = ['timestamp',]
     actions_on_bottom = True
     actions_on_top = True
 
 
 admin.site.register(History, HistoryAdmin)
 
+
+class StrategiesAdmin(admin.ModelAdmin):
+    list_display = ('name', 'status','variants')
+    # list_filter = []
+    actions_on_bottom = True
+    actions_on_top = True
+
+
+admin.site.register(Strategies, StrategiesAdmin)

@@ -13,7 +13,7 @@ def get_prices():
 
 
 def download_ohlcv(start=1625097600000, end=int(datetime.now().timestamp() * 1000), exchange='kucoin',
-                   pair='ETH/USDT'):
+                   pair='ETH/USDT', timeframe='1m'):
     np.set_printoptions(threshold=np.inf)
 
 
@@ -25,7 +25,7 @@ def download_ohlcv(start=1625097600000, end=int(datetime.now().timestamp() * 100
     # })
 
     symbol = pair
-    tf = '1m'
+    tf = timeframe
     from_timestamp = start
     end = end
 

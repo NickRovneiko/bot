@@ -7,8 +7,8 @@ from .models import Trades, Variants, Position, Logs, History, Strategies
 
 
 class TradesAdmin(admin.ModelAdmin):
-    list_display = ('strat','types', 'price', 'created')
-    list_filter = ['strat','types']
+    list_display = ('varian','types', 'price', 'created')
+    list_filter = ['varian','types']
     actions_on_bottom = True
     actions_on_top = True
 
@@ -17,8 +17,8 @@ admin.site.register(Trades, TradesAdmin)
 
 
 class VariantsAdmin(admin.ModelAdmin):
-    list_display = ('name','exchange','pair','balance_usd', 'step','limit_orders_buy', 'amount', 'profit_percent')
-    list_editable = ['exchange','pair','balance_usd', 'step','limit_orders_buy', 'amount', 'profit_percent']
+    list_display = ('name','exchange','pair','start_balance', 'range','limit_orders_buy', 'deals', 'profit_percent')
+    list_editable = ['pair','start_balance', 'range','limit_orders_buy', 'deals', 'profit_percent']
     search_fields = ['name']
     actions_on_bottom = True
     actions_on_top = True
@@ -48,8 +48,8 @@ class LogsAdmin(admin.ModelAdmin):
 admin.site.register(Logs, LogsAdmin)
 
 class HistoryAdmin(admin.ModelAdmin):
-    list_display = ('timestamp','exchange', 'pair','open', 'high', 'low')
-    list_filter = ['exchange', 'pair']
+    list_display = ('timestamp','exchange', 'pair','timeframe','open', 'high', 'low')
+    list_filter = ['exchange', 'pair','timeframe']
     search_fields = ['timestamp',]
     actions_on_bottom = True
     actions_on_top = True

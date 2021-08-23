@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponse
+from django.shortcuts import render, HttpResponse, redirect
 
 from trader.models import Variants, Position
 
@@ -8,47 +8,49 @@ from datetime import datetime
 from .view import engine
 
 
-
-
-
 def main(request):
-    ask_delete=False
     if request.GET.get('del'):
-        ic()
-        if request.GET.get('ask_delete'):
-            ic()
-            engine.delete_varian(request)
-        else:
-            ic()
-            ask_delete=request.GET.get('del')
+        Position.objects.filter(varian=Variants.objects.get(id=request.GET['del']).name).delete()
+        return redirect('/')
 
+    list_varian = Variants.objects.all()
 
-    list_varian=Variants.objects.all()
-
-    active_list_strats=[]
-    stop_list_strats=[]
+    active_list_strats = []
+    stop_list_strats = []
 
     for varian in list_varian:
-        varian.open=Position.objects.filter(varian=varian.name, active=True).count()
+        varian.open = Position.objects.filter(varian=varian.name, active=True).count()
         varian.closed = Position.objects.filter(varian=varian.name, active=False).count()
-        varian.profit=round(sum(Position.objects.filter(varian=varian.name, active=False).values_list('profit', flat=True)))
-        varian.balance=round(varian.balance_usd - Position.objects.filter(varian=varian.name, active=True).count() * varian.amount +varian.profit)
-        varian.range=round(varian.balance_usd/varian.amount*varian.step,1)
+        varian.profit = round(
+            sum(Position.objects.filter(varian=varian.name, active=False).values_list('profit', flat=True)), 5)
+        try:
+            amount_in_open = Position.objects.filter(varian=varian.name, active=True).values_list('buy_price',
+                                                                                                      'amount_base')
+            summa=sum([position[0] * position[1] for position in amount_in_open])
+            varian.balance = round(varian.start_balance - summa + varian.profit, 4)
+        except:
+            pass
+
         if Position.objects.filter(varian=varian.name).exists():
-            varian.opened=Position.objects.filter(varian=varian.name).order_by('opened').first().opened
-            varian.opened= datetime.fromtimestamp(varian.opened/1000).strftime('%Y-%m-%d %H:%M')
+            varian.opened = Position.objects.filter(varian=varian.name).order_by('opened').first().opened
+            varian.opened = datetime.fromtimestamp(varian.opened / 1000).strftime('%Y-%m-%d %H:%M')
 
+        if Position.objects.filter(varian=varian.name).exists():
+            varian.last = Position.objects.filter(varian=varian.name).order_by('opened').last().opened
+            varian.last = datetime.fromtimestamp(
+                Position.objects.filter(varian=varian.name).order_by('opened').last().opened / 1000).strftime(
+                '%Y-%m-%d %H:%M')
 
+        # if varian.balance > varian.amount:
+        #     active_list_strats.append(varian)
+        # else:
+        #     stop_list_strats.append(varian)
 
-        if varian.balance>varian.amount:
-            active_list_strats.append(varian)
-        else:
-            stop_list_strats.append(varian)
-
+        active_list_strats.append(varian)
     return render(request, 'trader/main.html',
-                  {'list_strats':active_list_strats,
-                   'stop_list_strats':stop_list_strats,
-                   'ask_delete':ask_delete})
+                  {'list_strats': active_list_strats,
+                   'stop_list_strats': stop_list_strats})
+
 
 def update_server(request):
     import git
@@ -64,3 +66,10 @@ def update_server(request):
         return HttpResponse('Updated PythonAnywhere successfully', 200)
     else:
         return HttpResponse('Wrong event type', 400)
+
+def varian_view(request):
+    varian=request.GET.get('varian')
+
+
+
+

@@ -12,13 +12,13 @@ from . import prices
 
 
 def get_historical_price(start=1625097600000, end=int(datetime.now().timestamp() * 1000), exchange='kucoin',
-                         pair='ETH/USDT', type='o'):
+                         pair='ETH/USDT', type='o', timeframe='1m'):
     ic(exchange, pair)
-    charts = History.objects.filter(exchange=exchange, pair=pair)
+    charts = History.objects.filter(exchange=exchange, pair=pair, timeframe=timeframe)
 
     if not charts.exists():
-        df = prices.download_ohlcv(start=start, end=end, exchange=exchange, pair=pair)
-        history_save(df, exchange, pair)
+        df = prices.download_ohlcv(start=start, end=end, exchange=exchange, pair=pair, timeframe=timeframe)
+        history_save(df, exchange, pair,timeframe)
         first = True
     else:
         first = False
@@ -26,8 +26,8 @@ def get_historical_price(start=1625097600000, end=int(datetime.now().timestamp()
     # дозагружаю период до имеющегося в базе
     if not first and start < charts.first().timestamp:
         try:
-            df = prices.download_ohlcv(start=start, end=charts.first().timestamp - 60000, exchange=exchange, pair=pair)
-            history_save(df, exchange, pair)
+            df = prices.download_ohlcv(start=start, end=charts.first().timestamp - 60000, exchange=exchange, pair=pair, timeframe=timeframe)
+            history_save(df, exchange, pair,timeframe)
 
 
         except:
@@ -37,8 +37,8 @@ def get_historical_price(start=1625097600000, end=int(datetime.now().timestamp()
     if not first and charts.last().timestamp < end:
         try:
             df = prices.download_ohlcv(start=charts.last().timestamp + 1, end=end, exchange=exchange,
-                                       pair=pair)
-            history_save(df, exchange, pair)
+                                       pair=pair, timeframe=timeframe)
+            history_save(df, exchange, pair, timeframe)
 
         except:
             Logs(text='ошибка загрузки после timestamp').save()
@@ -46,6 +46,7 @@ def get_historical_price(start=1625097600000, end=int(datetime.now().timestamp()
     qs = History.objects.filter(exchange=exchange,
                                 pair=pair,
                                 timestamp__gte=start,
+                                timeframe=timeframe,
                                 ).exclude(timestamp__gte=end)
     df_prices = read_frame(qs)
 
@@ -55,9 +56,10 @@ def get_historical_price(start=1625097600000, end=int(datetime.now().timestamp()
     return df_prices
 
 
-def history_save(df, exchange='kucoin', pair='ETH/USDT'):
+def history_save(df, exchange='kucoin', pair='ETH/USDT', timeframe='1m'):
     model_instances = [History(exchange=exchange,
                                pair=pair,
+                               timeframe=timeframe,
                                timestamp=row['t'],
                                open=row['o'],
                                high=row['h'],
@@ -68,19 +70,23 @@ def history_save(df, exchange='kucoin', pair='ETH/USDT'):
 
 
 def positions_save(df):
+    df = df.where(pd.notnull(df), 0)
     model_instances = [Position(varian=row.varian,
                                 buy_price=row.buy_price,
+                                sell_price=row.sell_price,
                                 strike=row.strike,
-                                amount_eth=row.amount_eth,
+                                amount_base=row.amount_base,
                                 opened=row.opened,
-                                active=row.active
+                                closed=row.closed,
+                                active=row.active,
+                                profit=row.profit
                                 )
                        for idx, row in df.iterrows()]
     Position.objects.bulk_create(model_instances)
 
 
-def get_df_postions(varian_name='kucoin_1_25_0.4'):
-    if Position.objects.filter(varian=varian_name).exists():
+def get_df_postions(varian_name='kucoin_1_25_0.4', active=True):
+    if Position.objects.filter(varian=varian_name, active=active).exists():
         positions = Position.objects.filter(varian=varian_name)
         df_positions = read_frame(positions)
     else:
@@ -89,3 +95,19 @@ def get_df_postions(varian_name='kucoin_1_25_0.4'):
         df_positions = pd.DataFrame(columns=columns)
 
     return df_positions
+
+def custom_timeframe():
+    start=1609459200000
+    end=1629072000000
+    exchange='binance'
+    pair='AXS/USDT'
+    timeframe='1h'
+
+
+    df=get_historical_price(start=start, end=end, exchange=exchange, pair=pair, timeframe=timeframe)
+
+    return df
+
+
+
+

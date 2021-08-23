@@ -16,6 +16,8 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'bot.settings'
 
 django.setup()
 
+from trader.view import store
+
 
 def startBot():
     from trader.view import engine
@@ -25,7 +27,11 @@ def startBot():
     engine.attempt()
 
 
+def start_ploty():
+    from trader.view  import plots
+    plots.run()
+
 
 
 if __name__ == '__main__':
-    startBot()
+    start_ploty()

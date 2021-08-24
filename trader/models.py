@@ -48,16 +48,21 @@ class Position(models.Model):
 
 class Variants(models.Model):
     name = models.CharField(max_length=250, unique=True, null=False, blank=False, verbose_name='Название')
+    pair = models.CharField(max_length=25, null=False, blank=False, verbose_name='Пара')
     type = models.CharField(max_length=250, null=False, blank=False, verbose_name='Тип')
     exchange = models.CharField(max_length=250, null=False, blank=False, verbose_name='Биржа')
     start_balance = models.FloatField( null=False, blank=False, verbose_name='Cтартовый')
-    pair = models.CharField(max_length=25, null=False, blank=False, verbose_name='Пара')
-    range = models.FloatField( null=True, blank=True, verbose_name='Коридор %')
-    limit_orders_buy = models.BooleanField(default=False, verbose_name='Лимитные ордера')
-    deals = models.FloatField( null=True, blank=True, verbose_name='Количество ставок')
-    profit_percent = models.FloatField( null=True, blank=True,
-                                         verbose_name='Процент прибыли')
-    stop_loss=models.CharField(max_length=250, default=None, null=True, blank=True, verbose_name='Стоп лосс')
+    settings = models.CharField(max_length=250, null=True, verbose_name='Настройка')
+    indicators = models.CharField(max_length=250, null=True, verbose_name='Индикаторы')
+    finish=models.BooleanField(default=False, verbose_name='Выполнена')
+
+    # range = models.FloatField(null=True, blank=True, verbose_name='Коридор %')
+    # limit_orders_buy = models.BooleanField(default=False, verbose_name='Лимитные ордера')
+    # deals = models.FloatField(null=True, blank=True, verbose_name='Количество ставок')
+    # profit_percent = models.FloatField(null=True, blank=True,
+    #                                    verbose_name='Процент прибыли')
+    # stop_loss = models.CharField(max_length=250, default=None, null=True, blank=True, verbose_name='Стоп лосс')
+
 
     class Meta:
         ordering = ['name']
@@ -123,6 +128,7 @@ class Strategies(models.Model):
     )
     status = models.CharField(max_length=50, default='Pending', choices=choiceStatus, verbose_name='Статус')
     variants = models.CharField(max_length=50, verbose_name='Варианты')
+    indicators=models.CharField(max_length=250, null=True, verbose_name='Индикаторы')
 
     class Meta:
         ordering = ['name']

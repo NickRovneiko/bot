@@ -1,32 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends "trader/base.html" %}
 
-    {% block title %}<title>BOT- автозагрузка</title>{% endblock %}
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-
-
-    <!-- Добавление дополнительного статического CSS файла -->
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-
-</head>
-
-<body>
-
-
-<nav class="navbar navbar-expand-sm bg-dark navbar-dark">
-    <ul class="navbar-nav">
-
-        <li class="nav-item"><a class="nav-link" href=/admin/>Админка</a></li>
-
-
-    </ul>
-</nav>
+{% block content %}
 
 {% if ask_delete %}
 <a href=/trader&del={{strat.name}}&ask_delete={{strat.name}}/>Удалить вариант {{ask_delete}} </a>
@@ -38,30 +12,42 @@
             <thead>
             <tr>
                 <th>Название</th>
-                <th>Диапазон колебания цены %</th>
+                <th>Стратегия</th>
+                <th>Настройки</th>
                 <th>Открытых</th>
                 <th>Закрытых</th>
-                <th>Баланс</th>
+                <th>Win %</th>
                 <th>Начало</th>
                 <th>Конец</th>
+                 <th>Баланс</th>
                 <th>Прибыль</th>
+                <th>К Hold</th>
+                <th>Месячная в %</th>
                 <th>Действия</th>
 
 
             </tr>
             <tbody>
-            {% for strat in list_strats %}
+            {% for varian in list_varians %}
             <tr>
 
-                <th><a href=/admin/trader/variants/{{strat.id}}/change/>{{strat.name}}</a> {% if strat.limit_orders_buy %} LIMITED {% endif %}</th>
-                <th>{{strat.range}} %</th>
-                <th><a href="/admin/trader/position/?o=-8.-5&strat={{strat.name}}/">{{strat.open}}</a></th>
-                <th><a href="/admin/trader/position/?o=-8.-5&strat={{strat.name}}/">{{strat.closed}}</a></th>
-                <th>{{strat.balance}}<small>
-                <th><small>{{strat.opened}}</small> </th>
-                <th><small>{{strat.last}}</small> </th>
-                <th>{{strat.profit}}</th>
-                <th><a href=/trader?del={{strat.id}}>Очистить</a></th>
+                <th><a href=/varian/?varian={{varian.id}}>{{varian.name}}</a> {% if varian.limit_orders_buy %} LIMITED
+                    {% elif  varian.stop_loss %} stop - {{varian.stop_loss}} {% endif%}
+                </th>
+                <th>{{varian.type}}</th>
+                <th><a href=/admin/trader/variants/{{varian.id}}/change/>SET</a></th>
+                <th><a href="/admin/trader/position/?o=-8.-5&strat={{varian.name}}/">{{varian.open}}</a></th>
+                <th><a href="/admin/trader/position/?o=-8.-5&strat={{varian.name}}/">{{varian.closed}}</a></th>
+                <th>{{varian.win_rate}} %</th>
+                <th><small>{{varian.opened}}</small></th>
+                <th><small>{{varian.last}}</small></th>
+                <th>{{varian.balance}}<small>
+                <th>{{varian.profit}}</th>
+                <th>{{varian.if_hold}} %</th>
+                <th>{{varian.month_profit}} %</th>
+
+
+                <th><a href=/trader?del={{varian.id}}>Очистить</a></th>
 
 
             </tr>
@@ -72,61 +58,46 @@
             </thead>
 
 
-<!--        </table>-->
-<!--        <p>-->
-<!--        <br>-->
-<!--         <table class="table table-striped table-sm" style="font-size:.7em">-->
-<!--            <thead>-->
-<!--            <tr>-->
-<!--                <th>Название</th>-->
-<!--                <th>Диапазон колебания цены</th>-->
-<!--                <th>Открытых</th>-->
-<!--                <th>Закрытых</th>-->
-<!--                <th>Баланс</th>-->
-<!--                <th>Первая</th>-->
-<!--                <th>Послед</th>-->
-<!--                <th>Прибыль</th>-->
+            <!--        </table>-->
+            <!--        <p>-->
+            <!--        <br>-->
+            <!--         <table class="table table-striped table-sm" style="font-size:.7em">-->
+            <!--            <thead>-->
+            <!--            <tr>-->
+            <!--                <th>Название</th>-->
+            <!--                <th>Диапазон колебания цены</th>-->
+            <!--                <th>Открытых</th>-->
+            <!--                <th>Закрытых</th>-->
+            <!--                <th>Баланс</th>-->
+            <!--                <th>Первая</th>-->
+            <!--                <th>Послед</th>-->
+            <!--                <th>Прибыль</th>-->
 
 
+            <!--            </tr>-->
+            <!--            <tbody>-->
+            <!--            {% for strat in stop_list_strats %}-->
+            <!--            <tr>-->
 
-<!--            </tr>-->
-<!--            <tbody>-->
-<!--            {% for strat in stop_list_strats %}-->
-<!--            <tr>-->
-
-<!--                <th><a href=/admin/trader/strategy/{{strat.id}}/change/>{{strat.name}}</a> {% if strat.limit_orders_buy %} LIMITED {% endif %}</th>-->
-<!--                <th>{{strat.step_perc}}</th>-->
-<!--                <th><a href="/admin/trader/position/?o=-8.-5&strat={{strat.name}}">{{strat.open}}</a></th>-->
-<!--                <th><a href="/admin/trader/trades/?o=-8.-5&strat={{strat.name}}">{{strat.closed}}</a></th>-->
-<!--                <th>{{strat.balance}}<small>-->
-<!--                <th><small>{{strat.opened}}</small> </th>-->
-<!--                <th><small>{{strat.last}}</small> </th>-->
-<!--                <th>{{strat.profit}}</th>-->
-
+            <!--                <th><a href=/admin/trader/strategy/{{strat.id}}/change/>{{strat.name}}</a> {% if strat.limit_orders_buy %} LIMITED {% endif %}</th>-->
+            <!--                <th>{{strat.step_perc}}</th>-->
+            <!--                <th><a href="/admin/trader/position/?o=-8.-5&strat={{strat.name}}">{{strat.open}}</a></th>-->
+            <!--                <th><a href="/admin/trader/trades/?o=-8.-5&strat={{strat.name}}">{{strat.closed}}</a></th>-->
+            <!--                <th>{{strat.balance}}<small>-->
+            <!--                <th><small>{{strat.opened}}</small> </th>-->
+            <!--                <th><small>{{strat.last}}</small> </th>-->
+            <!--                <th>{{strat.profit}}</th>-->
 
 
-<!--            </tr>-->
-<!--            {% endfor %}-->
+            <!--            </tr>-->
+            <!--            {% endfor %}-->
 
-<!--            </tbody>-->
+            <!--            </tbody>-->
 
-<!--            </thead>-->
-
-
-<!--        </table>-->
-<!--    </div>-->
-
-    <div class="container-fluid">
-        <div class="row">
+            <!--            </thead>-->
 
 
-            <div class="col">
+            <!--        </table>-->
+            <!--    </div>-->
 
-                {% block content %}
-                {% endblock %}
-
-            </div>
-        </div>
-
-</body>
-</html>
+            {% endblock %}

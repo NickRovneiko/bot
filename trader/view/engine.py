@@ -1,10 +1,14 @@
 from trader.models import Variants, Strategies, Position, History, Logs
 
 from trader.view import store, g
+
+from trader.view import indicators
 from icecream import ic
 
 import time
 import datetime
+
+import json
 
 
 def attempt():
@@ -16,40 +20,55 @@ def attempt():
 
 
 def backtesting_strategy(strat):
-    varians = Variants.objects.filter(type=strat.variants)
+    start = 1609459200000
+    end = 1629072000000
+    # timenow int(datetime.now().timestamp() * 1000
 
-    # запускаем для каждого варианта
-    for varian in varians:
-        start_time = time.time()
+    for strat in Strategies.objects.all():
+        for varian in Variants.objects.filter(type=strat.variants, finish=False):
 
-        start = 1609459200000
-        end = 1629072000000
-        # timenow int(datetime.now().timestamp() * 1000
+            # запускаем для каждого варианта
+            start_time = time.time()
 
-        df_prices = store.get_historical_price(exchange=varian.exchange, pair=varian.pair, start=start, end=end)
+            df_prices = store.get_historical_price(exchange=varian.exchange, pair=varian.pair, start=start, end=end)
+
+            # prepare indicator for strategy
+            if strat.indicators:
+                for key, value in json.loads(strat.indicators)['ma'].items():
+                    df_prices = indicators.ma(df_prices, name=key, period=value)
+
+            # задаю значение глобальных переменных
+            g.varian = varian
+            g.balance = varian.start_balance
+            g.df_positions = store.get_df_postions(varian.name)
+            g.close_positions = store.get_df_postions(varian.name, active=False)
+
+            if strat.name == 'volat':
+                # импортирую стратегию
+                from trader.view.strateg import volat as strategy_file
+
+                # догружаю переменные
+                g.step = g.get_step(df_prices.iloc[0].open)
+                g.amount = varian.start_balance / varian.deals
+                g.high_price = False
 
 
 
-        # задаю значение глобальных переменных
-        g.df_positions = store.get_df_postions(varian.name)
-        g.close_positions = store.get_df_postions(varian.name, active=False)
-        g.varian = varian
-        g.step = g.get_step(df_prices.iloc[0].open)
-        g.amount = varian.start_balance / varian.deals
-        g.balance = varian.start_balance
-        g.high_price = False
 
-        if len(g.df_positions) > 5:
-            continue
+            if strat.name == 'ma_cross':
+                from trader.view.strateg import ma_cross as strategy_file
 
-        # импортирую стратегию
-        from trader.view.Strateg import volat
+            ic('запускаю стратегию')
+            for idx, price in df_prices.iterrows():
+                g.quote = price
 
-        ic('запускаю стратегию')
-        volat.run(df_prices=df_prices)
-        store.positions_save(g.df_positions.append(g.close_positions))
+                strategy_file.execute_strat()
 
-        ic(f' времени заняло {round((time.time() - start_time))}')
+            store.positions_save(g.df_positions.append(g.close_positions))
+            varian.finish=True
+            varian.save()
+
+            ic(f' времени заняло {round((time.time() - start_time))}')
 
 
 def online():

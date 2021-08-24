@@ -34,4 +34,4 @@ def start_ploty():
 
 
 if __name__ == '__main__':
-    start_ploty()
+    startBot()

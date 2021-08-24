@@ -18,6 +18,10 @@ balance = False
 
 high_price=False
 
+position=False # отслеживала , открыта ли позициия. Это ускоряло с 41 до 38 секунд,  но выбивало иногда ошибку , неправильное было значение
+
+
+
 
 def get_step(price):
     step = price * (varian.range / 100) / varian.deals

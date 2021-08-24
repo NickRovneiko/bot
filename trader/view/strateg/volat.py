@@ -172,14 +172,3 @@ def lumite_buy_downtrend():
         i = i + 1
         if not check_balance() or not g.varian.limit_orders_buy:
             break
-
-
-
-
-def run(df_prices=False):
-    for idx, price in df_prices.iterrows():
-        g.quote = price
-
-        execute_strat()
-
-    return

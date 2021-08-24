@@ -17,9 +17,10 @@ admin.site.register(Trades, TradesAdmin)
 
 
 class VariantsAdmin(admin.ModelAdmin):
-    list_display = ('name','exchange','pair','start_balance', 'range','limit_orders_buy', 'deals', 'profit_percent')
-    list_editable = ['pair','start_balance', 'range','limit_orders_buy', 'deals', 'profit_percent']
+    list_display = ('name','exchange','pair','start_balance')
+    list_editable = ['pair','start_balance']
     search_fields = ['name']
+    list_filter = ['finish',]
     actions_on_bottom = True
     actions_on_top = True
 
@@ -28,7 +29,7 @@ admin.site.register(Variants, VariantsAdmin)
 
 
 class PositionAdmin(admin.ModelAdmin):
-    list_display = ('varian','buy_price','strike','sell_price', 'opened', 'closed', 'profit', 'active')
+    list_display = ('varian','buy_price','amount_base','sell_price', 'opened', 'closed', 'profit', 'active')
     list_filter = ['varian','active']
     search_fields = ['buy_price', 'sell_price', 'opened', 'closed']
     actions_on_bottom = True

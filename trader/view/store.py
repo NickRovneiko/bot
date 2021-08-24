@@ -25,22 +25,22 @@ def get_historical_price(start=1625097600000, end=int(datetime.now().timestamp()
 
     # дозагружаю период до имеющегося в базе
     if not first and start < charts.first().timestamp:
-        try:
+        if True:
             df = prices.download_ohlcv(start=start, end=charts.first().timestamp - 60000, exchange=exchange, pair=pair, timeframe=timeframe)
             history_save(df, exchange, pair,timeframe)
 
 
-        except:
+        else:
             Logs(text='ошибка загрузки вначале timestamp').save()
 
     #  дозагружаю период после имеющегося в базе
     if not first and charts.last().timestamp < end:
-        try:
+        if True:
             df = prices.download_ohlcv(start=charts.last().timestamp + 1, end=end, exchange=exchange,
                                        pair=pair, timeframe=timeframe)
             history_save(df, exchange, pair, timeframe)
 
-        except:
+        else:
             Logs(text='ошибка загрузки после timestamp').save()
 
     qs = History.objects.filter(exchange=exchange,
@@ -95,18 +95,6 @@ def get_df_postions(varian_name='kucoin_1_25_0.4', active=True):
         df_positions = pd.DataFrame(columns=columns)
 
     return df_positions
-
-def custom_timeframe():
-    start=1609459200000
-    end=1629072000000
-    exchange='binance'
-    pair='AXS/USDT'
-    timeframe='1h'
-
-
-    df=get_historical_price(start=start, end=end, exchange=exchange, pair=pair, timeframe=timeframe)
-
-    return df
 
 
 

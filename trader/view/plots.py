@@ -13,7 +13,6 @@ import pandas as pd
 
 import numpy as np
 
-import matplotlib.pyplot as plt
 
 def get_chart_varian(varian_id):
     varian = Variants.objects.get(id=varian_id)

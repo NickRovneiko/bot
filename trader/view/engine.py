@@ -1,8 +1,7 @@
 from trader.models import Variants, Strategies, Position, History, Logs
 
-from trader.view import store, g
+from trader.view import store, g, varian_stats,indicators
 
-from trader.view import indicators
 from icecream import ic
 
 import time
@@ -29,13 +28,13 @@ def backtesting_strategy(strat):
 
             # запускаем для каждого варианта
             start_time = time.time()
-
             df_prices = store.get_historical_price(exchange=varian.exchange, pair=varian.pair, start=start, end=end)
 
             # prepare indicator for strategy
             if strat.indicators:
                 for key, value in json.loads(strat.indicators)['ma'].items():
                     df_prices = indicators.ma(df_prices, name=key, period=value)
+
 
             # задаю значение глобальных переменных
             g.varian = varian
@@ -69,6 +68,11 @@ def backtesting_strategy(strat):
             varian.save()
 
             ic(f' времени заняло {round((time.time() - start_time))}')
+
+        for varian in Variants.objects.filter(type=strat.variants):
+            if not varian.sharp:
+                varian_stats.get_detail_stats(varian)
+
 
 
 def online():

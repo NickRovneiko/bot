@@ -23,7 +23,7 @@ def execute_strat():
 
     else:
         # надо ли покупать
-        if g.quote.fast > g.quote.slow:
+        if g.quote.slow and g.quote.fast > g.quote.slow:
             try_buy()
 
     return

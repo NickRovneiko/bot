@@ -3,19 +3,16 @@ import plotly.graph_objects as go
 
 from django_pandas.io import read_frame
 
-from trader.models import History, Position, Variants
+from trader.models import Position, Strategies
 
-from trader.view import store
+from trader.view import store, indicators
 
 from icecream import ic
 
-import pandas as pd
-
-import numpy as np
+import json
 
 
-def get_chart_varian(varian_id):
-    varian = Variants.objects.get(id=varian_id)
+def get_chart_varian(varian):
 
     df_positions = read_frame(
         Position.objects.filter(varian=varian.name)
@@ -30,10 +27,10 @@ def get_chart_varian(varian_id):
     end = 1629072000000
 
 
-    df = store.get_historical_price(start=start, end=end, exchange=exchange, pair=pair, timeframe='1h')
+    df = store.get_historical_price(type='all',start=start, end=end, exchange=exchange, pair=pair, timeframe='1h')
 
-    # df = df[['timestamp', 'open', 'close', 'low', 'high']]
-    df = df[['timestamp', 'open']]
+    df = df[['timestamp', 'open', 'close', 'low', 'high']]
+    # df = df[['timestamp', 'close']]
 
     df_buy = df_positions[['opened', 'buy_price']]
     df_buy = df_buy.rename(columns={'opened': 'timestamp'})
@@ -46,10 +43,19 @@ def get_chart_varian(varian_id):
     df_sell = df_sell.rename(columns={'closed': 'timestamp'})
 
     df = df.merge(df_sell, left_on='timestamp', right_on='timestamp', how='outer')
-    df['timestamp'] = df['timestamp'].values.astype(dtype='datetime64[ms]')
 
-    df['short'] = df.iloc[:, 1].rolling(window=6).mean()
-    df['long'] = df.iloc[:, 1].rolling(window=48).mean()
+
+    # создаю ma
+
+    for key, value in json.loads(Strategies.objects.get(variants=varian.type).indicators)['ma'].items():
+        df = indicators.ma(df, name=key, period=round(value/60))
+
+    # df=indicators.bollinger(df)
+    df=indicators.dochian(df)
+
+
+
+    df['timestamp'] = df['timestamp'].values.astype(dtype='datetime64[ms]')
     df.index = df.timestamp
 
 
@@ -57,7 +63,7 @@ def get_chart_varian(varian_id):
     graphs = []
 
     graphs.append(
-        go.Scatter(x=df['timestamp'], y=df['open'], mode='lines', name='Price', )
+        go.Scatter(x=df['timestamp'], y=df['close'], mode='lines', name='Price', )
     )
     graphs.append(
         go.Scatter(x=df['timestamp'], y=df['buy_price'], mode='markers', name='buy',
@@ -76,18 +82,34 @@ def get_chart_varian(varian_id):
     )
 
     graphs.append(
-        go.Scatter(x=df['timestamp'], y=df['short'], mode='lines', name='short',
+        go.Scatter(x=df['timestamp'], y=df['fast'], mode='lines', name='fast',
                    line=dict(
                        color='yellow')
                    )
     )
 
     graphs.append(
-        go.Scatter(x=df['timestamp'], y=df['long'], mode='lines', name='long',
+        go.Scatter(x=df['timestamp'], y=df['slow'], mode='lines', name='slow',
                    line=dict(
                        color='brown')
                    )
     )
+
+    graphs.append(
+        go.Scatter(x=df['timestamp'], y=df['doc_h'], mode='lines', name='doc_h',
+                   line=dict(
+                       color='black')
+                   )
+    )
+
+    graphs.append(
+        go.Scatter(x=df['timestamp'], y=df['doc_l'], mode='lines', name='doc_l',
+                   line=dict(
+                       color='black')
+                   )
+    )
+    #df['bb_bbm'] = indicator_bb.bollinger_mavg()
+
 
     # Setting layout of the figure.
     layout = {

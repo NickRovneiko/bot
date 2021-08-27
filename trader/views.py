@@ -12,8 +12,14 @@ from .view import engine, varian_stats, plots
 def main(request):
     if request.GET.get('del'):
         Position.objects.filter(varian=Variants.objects.get(id=request.GET['del']).name).delete()
-        Variants.objects.filter(id=request.GET['del']).update(finish=False)
+        Variants.objects.filter(id=request.GET['del']).update(finish=False, sharp=None)
+
         return redirect('/')
+    elif request.GET.get('reset_all'):
+        Position.objects.all().delete()
+        Variants.objects.all().update(finish=False,sharp=None)
+        return redirect('/')
+
 
     list_varian = Variants.objects.all()
 
@@ -41,10 +47,15 @@ def update_server(request):
 
 def varian_view(request):
     context={}
-    varian_id=request.GET.get('varian')
-    context['varian']=varian_stats.get_varian_stats(Variants.objects.filter(id=varian_id))[0]
+    varian=Variants.objects.get(id=request.GET.get('varian'))
 
-    context['graph'] = plots.get_chart_varian(varian_id)
+    context['varian']=varian_stats.get_varian_stats([varian,])[0]
+
+    context['graph'] = plots.get_chart_varian(varian)
+
+    if not varian.sharp:
+        varian_stats.get_detail_stats(varian)
+
     return render(request, 'trader/varian.html',context)
 
 

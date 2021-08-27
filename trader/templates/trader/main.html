@@ -13,16 +13,16 @@
             <tr>
                 <th>Название</th>
                 <th>Стратегия</th>
-                <th>Настройки</th>
                 <th>Открытых</th>
                 <th>Закрытых</th>
                 <th>Win %</th>
                 <th>Начало</th>
                 <th>Конец</th>
                  <th>Баланс</th>
-                <th>Прибыль</th>
+                <th>Прибыль(Тест)</th>
                 <th>К Hold</th>
                 <th>Месячная в %</th>
+                <th>Шарп</th>
                 <th>Действия</th>
 
 
@@ -31,20 +31,20 @@
             {% for varian in list_varians %}
             <tr>
 
-                <th><a href=/varian/?varian={{varian.id}}>{{varian.name}}</a> {% if varian.limit_orders_buy %} LIMITED
+                <th><a href=/variant?varian={{varian.id}}>{{varian.name}}</a> {% if varian.limit_orders_buy %} LIMITED
                     {% elif  varian.stop_loss %} stop - {{varian.stop_loss}} {% endif%}
                 </th>
                 <th>{{varian.type}}</th>
-                <th><a href=/admin/trader/variants/{{varian.id}}/change/>SET</a></th>
                 <th><a href="/admin/trader/position/?o=-8.-5&strat={{varian.name}}/">{{varian.open}}</a></th>
                 <th><a href="/admin/trader/position/?o=-8.-5&strat={{varian.name}}/">{{varian.closed}}</a></th>
                 <th>{{varian.win_rate}} %</th>
                 <th><small>{{varian.opened}}</small></th>
                 <th><small>{{varian.last}}</small></th>
                 <th>{{varian.balance}}<small>
-                <th>{{varian.profit}}</th>
-                <th>{{varian.if_hold}} %</th>
+                <th>{{varian.profit}}<small><a href="/admin/trader/tests/?o=-3.4.1&pair={{varian.name}}">/{{varian.test_profit}}</a></small></th>
+                <th>{{varian.if_hold}} % <small>{{varian.hold}}</small></th>
                 <th>{{varian.month_profit}} %</th>
+                <th>{{varian.sharp}}</th>
 
 
                 <th><a href=/trader?del={{varian.id}}>Очистить</a></th>
@@ -53,9 +53,11 @@
             </tr>
             {% endfor %}
 
+
             </tbody>
 
             </thead>
+            <a href=/trader?reset_all=reset_all>обновить все</a>
 
 
             <!--        </table>-->

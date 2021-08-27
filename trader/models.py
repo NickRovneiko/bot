@@ -52,8 +52,11 @@ class Variants(models.Model):
     type = models.CharField(max_length=250, null=False, blank=False, verbose_name='Тип')
     exchange = models.CharField(max_length=250, null=False, blank=False, verbose_name='Биржа')
     start_balance = models.FloatField( null=False, blank=False, verbose_name='Cтартовый')
-    settings = models.CharField(max_length=250, null=True, verbose_name='Настройка')
-    indicators = models.CharField(max_length=250, null=True, verbose_name='Индикаторы')
+    average_profit=models.CharField(max_length=100, null=True, blank=True, verbose_name='Средняя доходность')
+    month_profit=models.IntegerField(null=True, blank=True, verbose_name= 'Доходность')
+    sharp=models.FloatField(null=True, blank=True, verbose_name='Шарп')
+    settings = models.CharField(max_length=250, null=True, blank=True, verbose_name='Настройка')
+    indicators = models.CharField(max_length=250, null=True,blank=True, verbose_name='Индикаторы')
     finish=models.BooleanField(default=False, verbose_name='Выполнена')
 
     # range = models.FloatField(null=True, blank=True, verbose_name='Коридор %')
@@ -68,6 +71,30 @@ class Variants(models.Model):
         ordering = ['name']
         verbose_name = "Вариант"
         verbose_name_plural = "Варианты"
+
+    def __str__(self):
+        """
+        String for representing the Model object.
+        """
+        return '%s' % (self.name)
+
+class Tests(models.Model):
+    name = models.CharField(max_length=250,null=False, blank=False, verbose_name='Название')
+    pair = models.CharField(max_length=25, null=False, blank=False, verbose_name='Пара')
+    type = models.CharField(max_length=250, null=False, blank=False, verbose_name='Тип')
+    exchange = models.CharField(max_length=250, null=False, blank=False, verbose_name='Биржа')
+    start_balance = models.FloatField( null=False, blank=False, verbose_name='Cтартовый')
+    win_rate=models.IntegerField(null=False, blank=False, verbose_name='WIN %')
+    profit=models.FloatField( null=False, blank=False, verbose_name='Прибыль')
+    text = models.CharField(max_length=250, null=True, blank=True, verbose_name='Данные')
+    finish=models.BooleanField(default=False, verbose_name='Выполнена')
+
+
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = "Тесты"
+        verbose_name_plural = "Тесты"
 
     def __str__(self):
         """

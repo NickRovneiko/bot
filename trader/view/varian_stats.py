@@ -20,16 +20,14 @@ def get_varian_stats(list_varian=False):
         varian.open = Position.objects.filter(varian=varian.name, active=True).count()
         varian.closed = Position.objects.filter(varian=varian.name, active=False).count()
         varian.profit = sum(Position.objects.filter(varian=varian.name, active=False).values_list('profit', flat=True))
-        varian.profit=round(varian.profit, 2) if varian.profit < 20 else round(varian.profit)
+        varian.profit = round(varian.profit, 2) if varian.profit < 20 else round(varian.profit)
 
         varian.test_profit = Tests.objects.filter(name=varian.name).aggregate(Max('profit'))['profit__max']
         try:
             amount_in_open = Position.objects.filter(varian=varian.name, active=True).values_list('buy_price',
                                                                                                   'amount_base')
             summa = sum([position[0] * position[1] for position in amount_in_open])
-            varian.balance = round(varian.start_balance - summa + varian.profit,1)
-
-
+            varian.balance = round(varian.start_balance - summa + varian.profit, 1)
 
             # по отношению к hold
             varian.if_hold = round(((varian.profit / varian.start_balance + 1) * 100) - Position.objects.filter(
@@ -78,8 +76,8 @@ def get_detail_stats(varian=False):
 
     df_prices = store.get_historical_price(exchange=varian.exchange, pair=varian.pair, start=from_unix, end=till_unix)
 
-    for key, value in json.loads(Strategies.objects.get(variants=varian.type).indicators)['ma'].items():
-        df_prices = indicators.ma(df_prices, name=key, period=value)
+    g.strat = Strategies.objects.get(variants=varian.type)
+    df_prices = indicators.update_df_by_indicators(df_prices)
 
     i = 0
     month_mili = 2629800000

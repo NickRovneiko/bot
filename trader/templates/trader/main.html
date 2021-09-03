@@ -34,7 +34,7 @@
                 <th><a href=/variant?varian={{varian.id}}>{{varian.name}}</a> {% if varian.limit_orders_buy %} LIMITED
                     {% elif  varian.stop_loss %} stop - {{varian.stop_loss}} {% endif%}
                 </th>
-                <th>{{varian.type}}</th>
+                <th><a href="/admin/trader/variants/{{varian.id}}/change/">{{varian.type}}</a></th>
                 <th><a href="/admin/trader/position/?o=-8.-5&strat={{varian.name}}/">{{varian.open}}</a></th>
                 <th><a href="/admin/trader/position/?o=-8.-5&strat={{varian.name}}/">{{varian.closed}}</a></th>
                 <th>{{varian.win_rate}} %</th>

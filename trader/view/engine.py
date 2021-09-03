@@ -19,21 +19,19 @@ def attempt():
 
 
 def backtesting_strategy(strat):
-    start = 1609459200000
+    start = 1617235200000
     end = 1629072000000
     # timenow int(datetime.now().timestamp() * 1000
 
-    for strat in Strategies.objects.all():
+    for g.strat in Strategies.objects.all():
         for varian in Variants.objects.filter(type=strat.variants, finish=False):
+
 
             # запускаем для каждого варианта
             start_time = time.time()
-            df_prices = store.get_historical_price(exchange=varian.exchange, pair=varian.pair, start=start, end=end)
+            df= store.get_historical_price(exchange=varian.exchange, pair=varian.pair, start=start, end=end)
 
-            # prepare indicator for strategy
-            if strat.indicators:
-                for key, value in json.loads(strat.indicators)['ma'].items():
-                    df_prices = indicators.ma(df_prices, name=key, period=value)
+            df=indicators.update_df_by_indicators(df)
 
 
             # задаю значение глобальных переменных
@@ -42,23 +40,24 @@ def backtesting_strategy(strat):
             g.df_positions = store.get_df_postions(varian.name)
             g.close_positions = store.get_df_postions(varian.name, active=False)
 
+
             if strat.name == 'volat':
                 # импортирую стратегию
                 from trader.view.strateg import volat as strategy_file
 
                 # догружаю переменные
-                g.step = g.get_step(df_prices.iloc[0].open)
+                g.step = g.get_step(df.iloc[0].open)
                 g.amount = varian.start_balance / varian.deals
                 g.high_price = False
-
-
 
 
             if strat.name == 'ma_cross':
                 from trader.view.strateg import ma_cross as strategy_file
 
-            ic('запускаю стратегию')
-            for idx, price in df_prices.iterrows():
+
+
+
+            for idx, price in df.iterrows():
                 g.quote = price
 
                 strategy_file.execute_strat()

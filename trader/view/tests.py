@@ -39,15 +39,15 @@ def run(varian=False):
     # запускаем для каждого варианта
     qs = History.objects.filter(exchange=varian.exchange,
                                 pair=varian.pair,
-                                timestamp__gte=1609459200000,
+                                timestamp__gte=1617235200000,
                                 timeframe='1m',
                                 ).exclude(timestamp__gte=1629072000000)
     df_prices = read_frame(qs)
-    df_prices = df_prices[['timestamp', 'open']]
-    while Tests.objects.filter(name=varian.name).count() < 130:
+    df_prices = df_prices[['timestamp', 'close']]
+    while Tests.objects.filter(name=varian.name).count() < 100:
 
-        fast = random.randint(1, 30000)
-        slow = random.randint(fast, 60000)
+        fast = random.randint(1, 500)
+        slow = random.randint(fast, 15000)
 
         # prepare indicator for strategy
         df = indicators.ma(df_prices, name='fast', period=fast)

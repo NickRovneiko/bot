@@ -11,9 +11,11 @@ from trader.models import History, Position, Logs, Tests
 from . import prices
 
 
-def get_historical_price(start=1625097600000, end=int(datetime.now().timestamp() * 1000), exchange='kucoin',
-                         pair='ETH/USDT', type='c', timeframe='1m'):
-    ic(exchange, pair)
+def get_historical_price(start=1625097600000, end=1629072000000, exchange='binance',
+                         pair='ETH/USDT', type='all', timeframe='1m'):
+    if end == 'now':
+        end=int(datetime.now().timestamp() * 1000)
+
     charts = History.objects.filter(exchange=exchange, pair=pair, timeframe=timeframe)
 
     if not charts.exists():

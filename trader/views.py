@@ -12,12 +12,12 @@ from .view import engine, varian_stats, plots
 def main(request):
     if request.GET.get('del'):
         Position.objects.filter(varian=Variants.objects.get(id=request.GET['del']).name).delete()
-        Variants.objects.filter(id=request.GET['del']).update(finish=False, sharp=None)
+        Variants.objects.filter(id=request.GET['del']).update(finish=False, sharp=None,month_profit=None)
 
         return redirect('/')
     elif request.GET.get('reset_all'):
         Position.objects.all().delete()
-        Variants.objects.all().update(finish=False,sharp=None)
+        Variants.objects.all().update(finish=False,sharp=None, month_profit=None)
         return redirect('/')
 
 

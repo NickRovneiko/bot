@@ -8,8 +8,6 @@ from django.utils import timezone
 
 import pandas as pd
 
-from decimal import Decimal
-
 pd.options.display.max_columns = None
 
 
@@ -30,15 +28,15 @@ def execute_strat():
 
 
 def try_buy(price=False):
-    amount_base = g.balance / g.quote.open
+    amount_base = g.balance / g.quote.close
 
     g.df_positions = g.df_positions.append({'varian': g.varian.name,
-                                            'buy_price': g.quote.open,
+                                            'buy_price': g.quote.close,
                                             'opened': g.quote.timestamp,
                                             'amount_base': amount_base,
                                             'active': 1},
                                            ignore_index=True)
-    g.balance = g.balance - amount_base * g.quote.open
+    g.balance = g.balance - amount_base * g.quote.close
 
     return
 
@@ -62,7 +60,7 @@ def try_sell():
     close_positions(row=row)
 
     # обновляю баланс и убираю комиссию
-    g.balance = row.amount_base * g.quote.open - (row.sell_price + row.buy_price) * row.amount_base * 0.001
+    g.balance = row.amount_base * g.quote.close - (row.sell_price + row.buy_price) * row.amount_base * 0.001
 
     return
 
@@ -71,7 +69,7 @@ def close_positions(row=False, stop=False):
     g.df_positions = g.df_positions.drop([row.name])
 
     # закрываю позицию
-    row.sell_price = g.quote.open
+    row.sell_price = g.quote.close
     row.closed = g.quote.timestamp
     row.active = False
     row.profit = round(

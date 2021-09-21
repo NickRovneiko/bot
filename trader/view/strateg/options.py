@@ -75,7 +75,7 @@ def check_buy(d):
 
         # покупаем если выше верхнего позиции + шага
         if d['quote']['close'] > d['positions'].order_by('buy_price').last().buy_price + d['step']:
-            back_perfom.try_buy()
+            back_perfom.try_buy(d)
             return
 
         # покупаем если ниже нижней позиции + шага

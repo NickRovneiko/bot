@@ -7,7 +7,7 @@ from django_pandas.io import read_frame
 
 from trader.models import Position, Strategies
 
-from trader.view import store, indicators
+from trader.view import store, indicators, g
 
 from icecream import ic
 
@@ -18,8 +18,11 @@ def get_chart_varian(varian):
     df_positions = read_frame(
         Position.objects.filter(varian=varian.name)
     )
-    if len(df_positions) > 300:
-        df_positions = df_positions.sample(n=300)
+
+    if len(df_positions) > 500:
+        df_positions = df_positions.sample(n=500)
+
+    g.strat = Strategies.objects.get(variants=varian.type)
 
     exchange = varian.exchange
     pair = varian.pair
@@ -27,7 +30,7 @@ def get_chart_varian(varian):
     start = df_positions.iloc[-1].opened
     end = 1629072000000
 
-    df = store.get_historical_price(type='all', start=start, end=end, exchange=exchange, pair=pair, timeframe='1h')
+    df = store.get_historical_price(type='all', start=start, end=end, exchange=exchange, pair=pair, timeframe='1m')
 
     df = df[['timestamp', 'open', 'close', 'low', 'high']]
     # df = df[['timestamp', 'close']]
@@ -46,14 +49,23 @@ def get_chart_varian(varian):
     # df = df.merge(df_sell, left_on='timestamp', right_on='timestamp', how='outer')
 
     # создаю ma
-    for key, value in json.loads(Strategies.objects.get(variants=varian.type).indicators)['ma'].items():
-        df = indicators.ma(df, key=key, value=round(value / 60))
+    # for key, value in json.loads(Strategies.objects.get(variants=varian.type).indicators)['ma'].items():
+    #     df = indicators.ma(df, key=key, value=round(value / 60))
 
     # df=indicators.bollinger(df)
     # df=indicators.dochian(df)
 
+
+    # добавляю индикаторы
+    df=indicators.update_df_by_indicators(df)
+
+    df=df.dropna()
+
     # удаляю открытую позицию
     df_positions = df_positions[df_positions.closed > 0]
+
+
+
 
 
 
@@ -90,16 +102,18 @@ def get_chart_varian(varian):
         'width': 1400,
     }
 
+    # df=indicators
+
     fig = go.Figure(layout=layout)
 
+
+    for column in df.columns[1:]:
+        fig.add_trace(
+            go.Scattergl(x=df['timestamp'], y=df[column], mode='lines',name=column)
+        )
+
     fig.add_trace(
-        go.Scatter(x=df['timestamp'], y=df['close'], mode='lines', name='Price', )
-    )
-
-
-
-    fig.add_trace(
-        go.Scatter(x=df_positions['opened'], y=df_positions['buy_price'], mode='markers', name='buy',
+        go.Scattergl(x=df_positions['opened'], y=df_positions['buy_price'], mode='markers', name='buy',
                    line=dict(
                        color='green',
                        width=5)
@@ -107,30 +121,42 @@ def get_chart_varian(varian):
     )
 
     fig.add_trace(
-        go.Scatter(x=df_positions['closed'], y=df_positions['sell_price'], mode='markers', name='sell',
+        go.Scattergl(x=df_positions['closed'], y=df_positions['sell_price'], mode='markers', name='sell',
                    line=dict(
                        color='red',
                        width=5)
                    )
     )
 
-    fig.add_trace(
-        go.Scatter(x=df['timestamp'], y=df['fast'], mode='lines', name='fast',
-                   line=dict(
-                       color='yellow')
-                   )
-    )
+    #PPV
+    #fig.add_trace(
+    #     go.Scatter(x=df['timestamp'], y=df['fast'], mode='lines', name='fast',
+    #                line=dict(
+    #                    color='yellow')
+    #                )
+    # )
 
-    fig.add_trace(
-        go.Scatter(x=df['timestamp'], y=df['slow'], mode='lines', name='slow',
-                   line=dict(
-                       color='brown')
-                   )
-    )
+
+
+
+    # ma_cross
+    # fig.add_trace(
+    #     go.Scatter(x=df['timestamp'], y=df['fast'], mode='lines', name='fast',
+    #                line=dict(
+    #                    color='yellow')
+    #                )
+    # )
+    #
+    # fig.add_trace(
+    #     go.Scatter(x=df['timestamp'], y=df['slow'], mode='lines', name='slow',
+    #                line=dict(
+    #                    color='brown')
+    #                )
+    # )
 
     # маркеры
     fig.add_trace(
-        go.Scatter(x=df_positions.opened,
+        go.Scattergl(x=df_positions.opened,
                    y=df_positions.buy_price - df_positions.buy_price * 0.03,
                    mode='markers',
                    name='buy',
@@ -141,7 +167,7 @@ def get_chart_varian(varian):
     )
 
     fig.add_trace(
-        go.Scatter(x=df_positions.closed,
+        go.Scattergl(x=df_positions.closed,
                    y=df_positions.sell_price + df_positions.sell_price * 0.03,
                    mode='markers',
                    name='sell',

@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import TextInput, Textarea
 
-from .models import Trades, Variants, Position, Logs, History, Strategies, Tests
+from .models import Trades, Variants, Position, Logs, History, Strategies, Tests, Options
 
 
 class TradesAdmin(admin.ModelAdmin):
@@ -17,10 +17,10 @@ admin.site.register(Trades, TradesAdmin)
 
 
 class VariantsAdmin(admin.ModelAdmin):
-    list_display = ('name','exchange','pair','start_balance')
+    list_display = ('name','exchange','pair','start_balance','finish')
     list_editable = ['pair','start_balance']
-    search_fields = ['name']
-    list_filter = ['finish',]
+    search_fields = ['name',]
+    list_filter = ['finish','finish', 'type']
     actions_on_bottom = True
     actions_on_top = True
 
@@ -77,3 +77,14 @@ class TestsAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Tests, TestsAdmin)
+
+class OptionsAdmin(admin.ModelAdmin):
+    list_display = ['varian', 'buy_price', 'expiration' ,'strike']
+    list_filter = []
+    search_fields = []
+    actions_on_bottom = True
+    actions_on_top = True
+
+
+admin.site.register(Options, OptionsAdmin)
+

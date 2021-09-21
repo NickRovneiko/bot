@@ -35,6 +35,9 @@ def update_df_by_indicators(df=False):
             list_indicator = g.strat.indicators.split(',')
             for indicator in list_indicator:
                 df = eval(indicator)(df=df)
+
+
+
     return df
 
 
@@ -69,8 +72,8 @@ def PPVI_bands(df=pd.DataFrame):
     df = PPVI(df=df)
 
     df['ma'] = df.close.rolling(3).mean()
-    df['upper_band'] = df.ma + df.max_std_high * 2
-    df['bottom_band'] = df.ma - df.max_std_low * 2
+    df['upper_band'] = df.ma + df.max_std_high *3
+    df['bottom_band'] = df.ma - df.max_std_low *3
 
     return df
 

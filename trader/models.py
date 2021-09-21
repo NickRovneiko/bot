@@ -25,14 +25,14 @@ class Trades(models.Model):
 
 class Position(models.Model):
     varian = models.CharField(max_length=250, null=False, blank=False, verbose_name='Вариант')
-    buy_price = models.FloatField( null=False, blank=False, verbose_name='Покупка')
-    sell_price = models.FloatField( null=True, blank=True, verbose_name='Продажа')
-    strike = models.FloatField( null=True, blank=True, verbose_name='Страйк')
-    amount_base = models.FloatField( null=True, blank=True, verbose_name='Кол-во базового')
+    buy_price = models.FloatField(null=False, blank=False, verbose_name='Покупка')
+    sell_price = models.FloatField(null=True, blank=True, verbose_name='Продажа')
+    strike = models.FloatField(null=True, blank=True, verbose_name='Страйк')
+    amount_base = models.FloatField(null=True, blank=True, verbose_name='Кол-во базового')
     opened = models.IntegerField(null=False, verbose_name='Открыт')
     closed = models.IntegerField(null=True, verbose_name='Закрыт')
     active = models.BooleanField(default='True', verbose_name='Активен')
-    profit = models.FloatField( null=True, blank=True, verbose_name='Прибыль')
+    profit = models.FloatField(null=True, blank=True, verbose_name='Прибыль')
 
     class Meta:
         ordering = ['-opened']
@@ -47,17 +47,17 @@ class Position(models.Model):
 
 
 class Variants(models.Model):
-    name = models.CharField(max_length=250, unique=True, null=False, blank=False, verbose_name='Название')
+    name = models.CharField(max_length=250, null=False, blank=False, verbose_name='Название')
     pair = models.CharField(max_length=25, null=False, blank=False, verbose_name='Пара')
     type = models.CharField(max_length=250, null=False, blank=False, verbose_name='Тип')
     exchange = models.CharField(max_length=250, null=False, blank=False, verbose_name='Биржа')
-    start_balance = models.FloatField( null=False, blank=False, verbose_name='Cтартовый')
-    average_profit=models.CharField(max_length=100, null=True, blank=True, verbose_name='Средняя доходность')
-    month_profit=models.IntegerField(null=True, blank=True, verbose_name= 'Доходность')
-    sharp=models.FloatField(null=True, blank=True, verbose_name='Шарп')
+    start_balance = models.FloatField(null=False, blank=False, verbose_name='Cтартовый')
+    average_profit = models.CharField(max_length=100, null=True, blank=True, verbose_name='Средняя доходность')
+    month_profit = models.IntegerField(null=True, blank=True, verbose_name='Доходность')
+    sharp = models.FloatField(null=True, blank=True, verbose_name='Шарп')
     settings = models.CharField(max_length=250, null=True, blank=True, verbose_name='Настройка')
-    indicators = models.CharField(max_length=250, null=True,blank=True, verbose_name='Индикаторы')
-    finish=models.BooleanField(default=False, verbose_name='Выполнена')
+    indicators = models.CharField(max_length=250, null=True, blank=True, verbose_name='Индикаторы')
+    finish = models.BooleanField(default=False, verbose_name='Выполнена')
 
     # range = models.FloatField(null=True, blank=True, verbose_name='Коридор %')
     # limit_orders_buy = models.BooleanField(default=False, verbose_name='Лимитные ордера')
@@ -66,9 +66,9 @@ class Variants(models.Model):
     #                                    verbose_name='Процент прибыли')
     # stop_loss = models.CharField(max_length=250, default=None, null=True, blank=True, verbose_name='Стоп лосс')
 
-
     class Meta:
         ordering = ['name']
+        unique_together = ['name', 'type']
         verbose_name = "Вариант"
         verbose_name_plural = "Варианты"
 
@@ -78,18 +78,17 @@ class Variants(models.Model):
         """
         return '%s' % (self.name)
 
+
 class Tests(models.Model):
-    name = models.CharField(max_length=250,null=False, blank=False, verbose_name='Название')
+    name = models.CharField(max_length=250, null=False, blank=False, verbose_name='Название')
     pair = models.CharField(max_length=25, null=False, blank=False, verbose_name='Пара')
     type = models.CharField(max_length=250, null=False, blank=False, verbose_name='Тип')
     exchange = models.CharField(max_length=250, null=False, blank=False, verbose_name='Биржа')
-    start_balance = models.FloatField( null=False, blank=False, verbose_name='Cтартовый')
-    win_rate=models.IntegerField(null=False, blank=False, verbose_name='WIN %')
-    profit=models.FloatField( null=False, blank=False, verbose_name='Прибыль')
+    start_balance = models.FloatField(null=False, blank=False, verbose_name='Cтартовый')
+    win_rate = models.IntegerField(null=False, blank=False, verbose_name='WIN %')
+    profit = models.FloatField(null=False, blank=False, verbose_name='Прибыль')
     text = models.CharField(max_length=250, null=True, blank=True, verbose_name='Данные')
-    finish=models.BooleanField(default=False, verbose_name='Выполнена')
-
-
+    finish = models.BooleanField(default=False, verbose_name='Выполнена')
 
     class Meta:
         ordering = ['name']
@@ -125,13 +124,13 @@ class History(models.Model):
         ('1m', 'Минута'),
         ('1h', 'Час'),
     )
-    timeframe = models.CharField(max_length=25,null=False, choices=timeframe, verbose_name='Таймфрейм')
+    timeframe = models.CharField(max_length=25, null=False, choices=timeframe, verbose_name='Таймфрейм')
     timestamp = models.IntegerField(null=False, verbose_name='Время')
-    open = models.FloatField( null=False)
-    high = models.FloatField( null=False)
-    low = models.FloatField( null=False)
-    close = models.FloatField( null=False)
-    volume = models.FloatField( null=False)
+    open = models.FloatField(null=False)
+    high = models.FloatField(null=False)
+    low = models.FloatField(null=False)
+    close = models.FloatField(null=False)
+    volume = models.FloatField(null=False)
 
     class Meta:
         ordering = ['timestamp']
@@ -155,7 +154,7 @@ class Strategies(models.Model):
     )
     status = models.CharField(max_length=50, default='Pending', choices=choiceStatus, verbose_name='Статус')
     variants = models.CharField(max_length=50, verbose_name='Варианты')
-    indicators=models.CharField(max_length=250, null=True, verbose_name='Индикаторы')
+    indicators = models.CharField(max_length=250, null=True, verbose_name='Индикаторы')
 
     class Meta:
         ordering = ['name']
@@ -167,3 +166,26 @@ class Strategies(models.Model):
         String for representing the Model object.
         """
         return '%s' % (self.name)
+
+
+class Options(models.Model):
+    varian = models.CharField(max_length=250, null=False, blank=False, verbose_name='Вариант')
+    buy_price = models.FloatField(null=False, blank=False, verbose_name='Покупка')
+    sell_price = models.FloatField(null=True, blank=False, verbose_name='Закрытие')
+    strike = models.FloatField(null=True, blank=True, verbose_name='Страйк')
+    expiration = models.DateTimeField(null=False, verbose_name='Экспирация')
+    amount = models.FloatField(null=True, blank=True, verbose_name='Кол-во опциона')
+    opened = models.DateTimeField(default=timezone.now, null=False, verbose_name='Открыт')
+    closed = models.DateTimeField(null=True, verbose_name='Закрыт')
+    active = models.BooleanField(default='True', verbose_name='Активен')
+
+    class Meta:
+        ordering = ['-opened']
+        verbose_name = "Опцион"
+        verbose_name_plural = "Опционы"
+
+    def __str__(self):
+        """
+        String for representing the Model object.
+        """
+        return '%s' % (self.varian)

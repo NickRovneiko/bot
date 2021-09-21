@@ -1,6 +1,6 @@
 from trader.models import Position, Tests, Variants, Strategies
 
-from trader.view import store, indicators, g
+from trader.view import store, indicators, g, back_perfom
 
 from datetime import datetime
 
@@ -77,6 +77,7 @@ def get_detail_stats(varian=False):
     df_prices = store.get_historical_price(exchange=varian.exchange, pair=varian.pair, start=from_unix, end=till_unix)
 
     g.strat = Strategies.objects.get(variants=varian.type)
+
     df_prices = indicators.update_df_by_indicators(df_prices)
 
     i = 0
@@ -84,11 +85,17 @@ def get_detail_stats(varian=False):
 
     protit_by_30 = []
 
+
+
+    from trader.view.strateg import PPV as strategy_file
+
     while from_unix + i * month_mili < till_unix:
 
         period_prices = df_prices.loc[
             (df_prices['timestamp'] >= from_unix + i * month_mili) & (
                     df_prices['timestamp'] <= from_unix + month_mili + i * month_mili)]
+
+        period_prices=indicators.update_df_by_indicators(period_prices)
 
         # задаю значение глобальных переменных
         g.varian = varian
@@ -96,16 +103,13 @@ def get_detail_stats(varian=False):
         g.df_positions = pd.DataFrame(columns=[column.name for column in Position._meta.get_fields()])
         g.close_positions = pd.DataFrame(columns=[column.name for column in Position._meta.get_fields()])
 
-        from trader.view.strateg import ma_cross as strategy_file
 
-        for idx, price in period_prices.iterrows():
-            g.quote = price
+        # запуск стратегии
+        g.get_strat_file(g.strat).run(df=period_prices, statistic=True)
 
-            strategy_file.execute_strat()
-
-        # закрываю позиция елси открыта
+        # закрываю позицию если открыта
         if len(g.df_positions) > 0:
-            strategy_file.close_positions(g.df_positions.iloc[0])
+            back_perfom.g_close_positions(g.df_positions.iloc[0])
 
         percent_profit = round(sum(g.close_positions['profit']) / varian.start_balance * 100)
 
@@ -113,15 +117,18 @@ def get_detail_stats(varian=False):
 
         i += 1
 
-    standart_deviation = statistics.stdev(protit_by_30)
-    average_profit_without_minus_risk = statistics.mean(protit_by_30) - len(protit_by_30)
+    try:
+        standart_deviation = statistics.stdev(protit_by_30)
+        average_profit_without_minus_risk = statistics.mean(protit_by_30) - len(protit_by_30)
+        varian.sharp = round(average_profit_without_minus_risk / standart_deviation, 2)
+    except:
+        pass
+
 
     # сохраняю статистику в varian
     # месячная доходность в процентах
     varian.month_profit = round(statistics.mean(protit_by_30))
-
     varian.average_profit = protit_by_30
-    varian.sharp = round(average_profit_without_minus_risk / standart_deviation, 2)
     varian.save()
 
     return

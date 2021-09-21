@@ -4,7 +4,7 @@ import datetime
 
 from icecream import ic
 
-def getMarketPrice(exchange,pair):
+def get_bid_price(exchange:str(), pair:str()):
 
     exchange = getattr(ccxt,exchange)()
 
@@ -28,7 +28,30 @@ def gather_data():
 
     ic(df)
 
+def get_history_deribit(pair='ETH-18SEP21-3600-P'):
+    exchange = getattr(ccxt, 'deribit')()
+    markets = exchange.load_markets()
+    data = exchange.fetch_ohlcv(symbol=pair,
+                         limit=1000,
+                         since=1631923201000)
 
+    ic(len(data))
+    ic(data)
+
+    return
+
+
+def get_quote(exchange:str(), pair:str()):
+
+    exchange = getattr(ccxt,exchange)()
+
+    markets = exchange.load_markets()
+
+    price = exchange.fetch_ticker(pair)
+
+    return price
 
 if __name__ == '__main__':
-    gather_data()
+    pair='ETH-20SEP21-3400-P'
+    result = get_quote(exchange='deribit',pair=pair)
+    ic(result)

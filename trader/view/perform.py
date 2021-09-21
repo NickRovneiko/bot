@@ -1,5 +1,3 @@
-from trader.view import g, store
-
 from trader.models import Trades, Position, Logs
 
 from icecream import ic
@@ -9,22 +7,6 @@ from django.utils import timezone
 import pandas as pd
 
 pd.options.display.max_columns = None
-
-
-def execute_strat():
-    # есть ли открытая позиция
-    if not g.df_positions.empty:
-        # если есть надо ли продавать
-        if g.quote.slow > g.quote.fast:
-            # продать
-            try_sell()
-
-    else:
-        # надо ли покупать
-        if g.quote.slow and g.quote.fast > g.quote.slow:
-            try_buy()
-
-    return
 
 
 def try_buy(price=False):
@@ -54,7 +36,6 @@ def try_sell():
         ic(g.df_positions)
         exit()
 
-
     row = g.df_positions.iloc[0]
 
     close_positions(row=row)
@@ -77,23 +58,10 @@ def close_positions(row=False, stop=False):
         6)
 
     # добавляю в базу выполненных позиций
-    g.close_positions = g.close_positions.append(row)
+    g.g_close_positions = g.g_close_positions.append(row)
 
     return
 
-def validate_g_and_df(df:pd.DataFrame):
-    df=df.dropna()
 
-    return df
-
-
-def run(df:pd.DataFrame):
-    df=validate_g_and_df(df)
-
-    for idx, price in df.iterrows():
-        g.quote = price
-        execute_strat()
-
-    store.positions_save(g.df_positions.append(g.close_positions))
-    g.varian.finish = True
-    g.varian.save()
+def buy_option():
+    return

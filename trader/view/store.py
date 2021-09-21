@@ -27,23 +27,23 @@ def get_historical_price(start=1625097600000, end=1629072000000, exchange='binan
 
     # дозагружаю период до имеющегося в базе
     if not first and start < charts.first().timestamp:
-        if True:
+        try:
             df = prices.download_ohlcv(start=start, end=charts.first().timestamp - 60000, exchange=exchange, pair=pair,
                                        timeframe=timeframe)
             history_save(df, exchange, pair, timeframe)
 
 
-        else:
+        except:
             Logs(text='ошибка загрузки вначале timestamp').save()
 
     #  дозагружаю период после имеющегося в базе
     if not first and charts.last().timestamp < end:
-        if True:
+        try:
             df = prices.download_ohlcv(start=charts.last().timestamp + 1, end=end, exchange=exchange,
                                        pair=pair, timeframe=timeframe)
             history_save(df, exchange, pair, timeframe)
 
-        else:
+        except:
             Logs(text='ошибка загрузки после timestamp').save()
 
     qs = History.objects.filter(exchange=exchange,

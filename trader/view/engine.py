@@ -1,6 +1,6 @@
 from trader.models import Variants, Strategies, Position, History, Logs
 
-from trader.view import store, g, varian_stats,indicators
+from trader.view import store, g, varian_stats, indicators, analitics
 
 from icecream import ic
 
@@ -10,29 +10,31 @@ import datetime
 import json
 
 
-def attempt():
-    strategies = Strategies.objects.all()
+def online_bot():
+    strategies = Strategies.objects.filter(status='Online')
 
     for strat in strategies:
-        if strat.status == 'Testing':
-            backtesting_strategy(strat)
+        for varian in Variants.objects.filter(type=strat.name):
+            g.get_strat_file(strat).run_online(varian)
+
+
 
 
 def backtesting_strategy(strat):
-    start = 1617235200000
-    end = 1629072000000
+    start = 1609459200000
+    end = 1630454400000
     # timenow int(datetime.now().timestamp() * 1000
 
-    for g.strat in Strategies.objects.all():
+    for strat in Strategies.objects.all():
+        g.strat = strat
         for varian in Variants.objects.filter(type=strat.variants, finish=False):
 
 
             # запускаем для каждого варианта
             start_time = time.time()
-            df= store.get_historical_price(exchange=varian.exchange, pair=varian.pair, start=start, end=end)
+            df = store.get_historical_price(exchange=varian.exchange, pair=varian.pair, start=start, end=end)
 
-            df=indicators.update_df_by_indicators(df)
-
+            df = indicators.update_df_by_indicators(df)
 
             # задаю значение глобальных переменных
             g.varian = varian
@@ -40,8 +42,7 @@ def backtesting_strategy(strat):
             g.df_positions = store.get_df_postions(varian.name)
             g.close_positions = store.get_df_postions(varian.name, active=False)
 
-
-            if strat.name == 'volat':
+            if g.strat.name == 'volat':
                 # импортирую стратегию
                 from trader.view.strateg import volat as strategy_file
 
@@ -51,27 +52,15 @@ def backtesting_strategy(strat):
                 g.high_price = False
 
 
-            if strat.name == 'ma_cross':
-                from trader.view.strateg import ma_cross as strategy_file
-
-
-
-
-            for idx, price in df.iterrows():
-                g.quote = price
-
-                strategy_file.execute_strat()
-
-            store.positions_save(g.df_positions.append(g.close_positions))
-            varian.finish=True
-            varian.save()
+            g.get_strat_file(strat).run(df)
 
             ic(f' времени заняло {round((time.time() - start_time))}')
 
-        for varian in Variants.objects.filter(type=strat.variants):
-            if not varian.sharp:
-                varian_stats.get_detail_stats(varian)
 
+            if not varian.sharp and end-start>2629800000*2:
+                ic(varian)
+                ic(g.strat)
+                varian_stats.get_detail_stats(varian)
 
 
 def online():

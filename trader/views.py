@@ -10,18 +10,24 @@ from .view import engine, varian_stats, plots
 
 
 def main(request):
+    list_varian = Variants.objects.all()
+
+
     if request.GET.get('del'):
         Position.objects.filter(varian=Variants.objects.get(id=request.GET['del']).name).delete()
+        ic(request.GET['del'])
         Variants.objects.filter(id=request.GET['del']).update(finish=False, sharp=None,month_profit=None)
 
         return redirect('/')
+
+    elif request.GET.get('type'):
+        list_varian=Variants.objects.filter(type=request.GET.get('type'))
+
     elif request.GET.get('reset_all'):
         Position.objects.all().delete()
         Variants.objects.all().update(finish=False,sharp=None, month_profit=None)
         return redirect('/')
 
-
-    list_varian = Variants.objects.all()
 
     list_varians=varian_stats.get_varian_stats(list_varian)
 

@@ -21,7 +21,7 @@ def startBot():
     from trader.view import engine
 
     while True:
-        engine.attempt()
+        engine.online_bot()
 
 
 if __name__ == '__main__':

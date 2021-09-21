@@ -10,7 +10,7 @@ def Run():
 
         try:
 
-            currentPrices[market[0]].update({market[1]: api.getMarketPrice(market[0], market[1])})
+            currentPrices[market[0]].update({market[1]: api.get_bid_price(market[0], market[1])})
         except:
             Logs(text=f'ошибка в загрузке цен {market}').save()
 

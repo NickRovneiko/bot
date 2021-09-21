@@ -22,7 +22,7 @@ balance=10000
 
 
 def attemptToMakeTrade():
-    currentPrice = api.getMarketPrice()
+    currentPrice = api.get_bid_price()
     percentageDiff = (currentPrice - lastOpPrice)/lastOpPrice*100
     if isNextOperationBuy:
         tryToBuy(percentageDiff, currentPrice)
@@ -51,13 +51,13 @@ def tryToSell(percentageDiff,currentPrice):
 
 
 def placeBuyOrder(currentPrice):
-    price = api.getMarketPrice()
+    price = api.get_bid_price()
     print(f'купил по {price} дельта задержки {round(price/currentPrice *100,2)} ')
 
     return price
 
 def placeSellOrder(currentPrice):
-    price= api.getMarketPrice()
+    price= api.get_bid_price()
     print(f'продал по {price} дельта задержки {round(price/currentPrice *100,2)}')
 
     return price

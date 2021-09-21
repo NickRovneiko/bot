@@ -63,9 +63,7 @@ def get_markets(exchange:str()):
     return market
 
 if __name__ == '__main__':
-    pair='ETH-20SEP21-3400-P'
-    result = get_markets(exchange='deribit')
-    for key in result:
-        if key.startswith('ETH-8OCT21'):
-            ic(key)
+    pair='ETH-PERPETUAL'#'ETH-20SEP21-3400-P'
+    result = get_quote(exchange='deribit', pair=pair)
+    ic(result)
 

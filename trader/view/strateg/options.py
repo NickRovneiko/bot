@@ -55,9 +55,6 @@ def check_sell(d):
         for row in d['positions']:
             if d['quote']['close'] > row.strike:
                 back_perfom.try_sell(d,row)
-
-            else:
-                break
     else:
         Logs(text=f'ошибка в продаже {strat.name}').save()
 

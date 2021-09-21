@@ -30,7 +30,7 @@ class Position(models.Model):
     strike = models.FloatField(null=True, blank=True, verbose_name='Страйк')
     amount_base = models.FloatField(null=True, blank=True, verbose_name='Кол-во базового')
     opened = models.DateTimeField(null=False, verbose_name='Открыт')
-    closed = models.DateTimeField(null=True, verbose_name='Закрыт')
+    closed = models.DateTimeField(null=True, blank=True, verbose_name='Закрыт')
     active = models.BooleanField(default='True', verbose_name='Активен')
     profit = models.FloatField(null=True, blank=True, verbose_name='Прибыль')
 

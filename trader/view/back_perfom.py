@@ -113,7 +113,7 @@ def try_buy(d, strike=False):
           amount=-d['amount'],
           desc=f"покупка по {d['quote']['close']}").save()
 
-    return d
+    return
 def try_sell(d, row):
 
     row.sell_price = d['quote']['close']

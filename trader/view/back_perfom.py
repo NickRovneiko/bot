@@ -100,7 +100,7 @@ def check_buy_option(d):
 def try_buy(d, strike=False):
     amount_base = d['amount'] / d['quote']['close']
 
-    strike = d['quote']['close'] * (1 + d['strike'])
+    strike = d['quote']['close'] * (1 + d['strike']/100)
 
     Position(varian=d['varian'].name,
              buy_price=d['quote']['close'],

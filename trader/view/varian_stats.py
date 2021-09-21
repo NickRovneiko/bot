@@ -1,4 +1,4 @@
-from trader.models import Position, Tests, Variants, Strategies
+from trader.models import Position, Tests, Variants, Strategies, Trans
 
 from trader.view import store, indicators, g, back_perfom
 
@@ -27,7 +27,7 @@ def get_varian_stats(list_varian=False):
             amount_in_open = Position.objects.filter(varian=varian.name, active=True).values_list('buy_price',
                                                                                                   'amount_base')
             summa = sum([position[0] * position[1] for position in amount_in_open])
-            varian.balance = round(varian.start_balance - summa + varian.profit, 1)
+            varian.balance = round(varian.start_balance + sum(Trans.objects.filter(varian=varian.name).values_list('amount', flat=True)) + varian.profit, 1)
 
             # по отношению к hold
             varian.if_hold = round(((varian.profit / varian.start_balance + 1) * 100) - Position.objects.filter(

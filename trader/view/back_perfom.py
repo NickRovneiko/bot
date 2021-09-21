@@ -123,7 +123,7 @@ def try_sell(d, row):
     row.save()
 
     Trans(varian = d['varian'].name,
-          amount = row.sell_price * row.amount_base,
+          amount = (row.sell_price-row.buy_price) * row.amount_base,
           desc=f"продажа по {d['quote']['close']}").save()
 
     return

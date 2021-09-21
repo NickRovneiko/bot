@@ -23,7 +23,6 @@ def startBot():
 
     while True:
         engine.online_bot()
-        time.sleep(20)
 
 
 

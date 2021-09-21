@@ -29,8 +29,8 @@ class Position(models.Model):
     sell_price = models.FloatField(null=True, blank=True, verbose_name='Продажа')
     strike = models.FloatField(null=True, blank=True, verbose_name='Страйк')
     amount_base = models.FloatField(null=True, blank=True, verbose_name='Кол-во базового')
-    opened = models.IntegerField(null=False, verbose_name='Открыт')
-    closed = models.IntegerField(null=True, verbose_name='Закрыт')
+    opened = models.DateTimeField(null=False, verbose_name='Открыт')
+    closed = models.DateTimeField(null=True, verbose_name='Закрыт')
     active = models.BooleanField(default='True', verbose_name='Активен')
     profit = models.FloatField(null=True, blank=True, verbose_name='Прибыль')
 
@@ -171,18 +171,36 @@ class Strategies(models.Model):
 class Options(models.Model):
     varian = models.CharField(max_length=250, null=False, blank=False, verbose_name='Вариант')
     buy_price = models.FloatField(null=False, blank=False, verbose_name='Покупка')
-    sell_price = models.FloatField(null=True, blank=False, verbose_name='Закрытие')
+    sell_price = models.FloatField(null=True, blank=True, verbose_name='Закрытие')
     strike = models.FloatField(null=True, blank=True, verbose_name='Страйк')
     expiration = models.DateTimeField(null=False, verbose_name='Экспирация')
+    delta = models.FloatField(null=False, blank=True, verbose_name='Дельта')
     amount = models.FloatField(null=True, blank=True, verbose_name='Кол-во опциона')
-    opened = models.DateTimeField(default=timezone.now, null=False, verbose_name='Открыт')
-    closed = models.DateTimeField(null=True, verbose_name='Закрыт')
+    opened = models.DateTimeField(auto_now_add=True, null=False, verbose_name='Открыт')
+    closed = models.DateTimeField(null=True, blank=True, verbose_name='Закрыт')
     active = models.BooleanField(default='True', verbose_name='Активен')
 
     class Meta:
         ordering = ['-opened']
         verbose_name = "Опцион"
         verbose_name_plural = "Опционы"
+
+    def __str__(self):
+        """
+        String for representing the Model object.
+        """
+        return '%s' % (self.id)
+
+class Trans(models.Model):
+    varian = models.CharField(max_length=250, null=False, blank=False, verbose_name='Название')
+    amount = models.FloatField(null=False, blank=False, verbose_name='Сумма')
+    desc = models.CharField(max_length=250, null=False, blank=False, verbose_name='Описание')
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Создан')
+
+    class Meta:
+        ordering = ['-created']
+        verbose_name = "Транзакция"
+        verbose_name_plural = "Транзакции"
 
     def __str__(self):
         """

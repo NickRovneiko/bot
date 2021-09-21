@@ -51,7 +51,21 @@ def get_quote(exchange:str(), pair:str()):
 
     return price
 
+def get_markets(exchange:str()):
+
+    exchange = getattr(ccxt,exchange)()
+
+    markets = exchange.load_markets()
+
+    market = exchange.markets
+
+
+    return market
+
 if __name__ == '__main__':
     pair='ETH-20SEP21-3400-P'
-    result = get_quote(exchange='deribit',pair=pair)
-    ic(result)
+    result = get_markets(exchange='deribit')
+    for key in result:
+        if key.startswith('ETH-8OCT21'):
+            ic(key)
+

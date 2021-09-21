@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import TextInput, Textarea
 
-from .models import Trades, Variants, Position, Logs, History, Strategies, Tests, Options
+from .models import Trades, Variants, Position, Logs, History, Strategies, Tests, Options, Trans
 
 
 class TradesAdmin(admin.ModelAdmin):
@@ -88,3 +88,11 @@ class OptionsAdmin(admin.ModelAdmin):
 
 admin.site.register(Options, OptionsAdmin)
 
+class TransAdmin(admin.ModelAdmin):
+    list_display = ('varian', 'amount', 'desc', 'created')
+    list_filter = []
+    actions_on_bottom = True
+    actions_on_top = True
+
+
+admin.site.register(Trans, TransAdmin)

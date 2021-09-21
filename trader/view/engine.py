@@ -1,14 +1,13 @@
-from trader.models import Variants, Strategies, Position, History, Logs
+from trader.models import Variants, Strategies
 
 from trader.view import store, g, varian_stats, indicators, analitics
 
 from icecream import ic
 
-import time
+from django.utils import timezone
 import datetime
 
 import json
-
 
 def online_bot():
     strategies = Strategies.objects.filter(status='Online')
@@ -31,7 +30,7 @@ def backtesting_strategy(strat):
 
 
             # запускаем для каждого варианта
-            start_time = time.time()
+            start_time = timezone.now()
             df = store.get_historical_price(exchange=varian.exchange, pair=varian.pair, start=start, end=end)
 
             df = indicators.update_df_by_indicators(df)
@@ -54,9 +53,9 @@ def backtesting_strategy(strat):
 
             g.get_strat_file(strat).run(df)
 
-            ic(f' времени заняло {round((time.time() - start_time))}')
+            ic(f' времени заняло {round((timezone.now() - start_time))}')
 
-
+            # если у стратегии нету шарпа и стратгеия работала больше 2 месцев
             if not varian.sharp and end-start>2629800000*2:
                 ic(varian)
                 ic(g.strat)

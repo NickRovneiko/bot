@@ -25,9 +25,9 @@ previous = False
 options = False
 
 
-def get_step(price):
-    step = price * (varian.range / 100) / varian.deals
-    return step
+def get_step(d):
+    d['step'] = round(d['quote']['close'] * (d['range'] / 100) / d['deals'])
+    return d['step']
 
 
 def update_balance():

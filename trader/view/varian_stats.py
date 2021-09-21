@@ -46,13 +46,9 @@ def get_varian_stats(list_varian=False):
 
         if Position.objects.filter(varian=varian.name).exists():
             varian.opened = Position.objects.filter(varian=varian.name).order_by('opened').first().opened
-            varian.opened = datetime.fromtimestamp(varian.opened / 1000).strftime('%Y-%m-%d %H:%M')
 
         if Position.objects.filter(varian=varian.name).exists():
             varian.last = Position.objects.filter(varian=varian.name).order_by('opened').last().opened
-            varian.last = datetime.fromtimestamp(
-                Position.objects.filter(varian=varian.name).order_by('opened').last().opened / 1000).strftime(
-                '%Y-%m-%d %H:%M')
 
         # if varian.balance > varian.amount:
         #     active_list_strats.append(varian)

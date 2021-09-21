@@ -15,7 +15,7 @@ pd.options.display.max_columns = None
 
 
 def execute_strat(d):
-    d['positions'] = Position.objects.filter(varian=d['varian'])
+    d['positions'] = Position.objects.filter(varian=d['varian'], active=True)
 
     if not Options.objects.filter(varian=d['varian']).exists():
         # back_perfom.check_buy_option
@@ -55,7 +55,7 @@ def check_sell(d):
         for row in d['positions']:
             if d['quote']['close'] > row.strike:
                 back_perfom.try_sell(d,row)
-                d['positions'] = Position.objects.filter(varian=d['varian'])
+                break
     else:
         Logs(text=f'ошибка в продаже {strat.name}').save()
 

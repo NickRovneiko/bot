@@ -19,9 +19,12 @@ django.setup()
 
 def startBot():
     from trader.view import engine
+    import time
 
     while True:
         engine.online_bot()
+        time.sleep(20)
+
 
 
 if __name__ == '__main__':

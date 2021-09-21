@@ -116,7 +116,7 @@ def try_buy(d, strike=False):
     return
 def try_sell(d, row):
 
-    row.sell_price = d['quote']['close']
+    row.sell_price = row.strike
     row.closed = timezone.now()
     row.active = False
     row.profit = (row.sell_price-row.buy_price) * row.amount_base-(row.sell_price + row.buy_price) * row.amount_base * 0.0005

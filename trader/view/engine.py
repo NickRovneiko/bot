@@ -20,10 +20,8 @@ def online_bot():
             if quote and varian.pair == quote['symbol']:
                 g.get_strat_file(strat).run_online(varian=varian, quote=quote)
 
-                ic('не гружу цены')
             else:
                 quote = g.get_strat_file(strat).run_online(varian=varian, quote=False)
-                ic('гружу цены')
 
 
 

@@ -42,8 +42,7 @@ def execute_strat(d):
 
 
 def check_balance(d):
-    if d['varian'].start_balance-sum(Trans.objects.filter(varian=d['varian']).values_list('amount', flat=True)) - d['amount']<= 0:
-        ic('меньше нуля')
+    if d['varian'].start_balance+sum(Trans.objects.filter(varian=d['varian']).values_list('amount', flat=True)) - d['amount']<= 0:
         return False
     else:
         return True

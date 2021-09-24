@@ -90,7 +90,8 @@ admin.site.register(Options, OptionsAdmin)
 
 class TransAdmin(admin.ModelAdmin):
     list_display = ('varian', 'amount', 'desc', 'created')
-    list_filter = []
+    list_filter = ['varian','created']
+    search_fields = ['desc']
     actions_on_bottom = True
     actions_on_top = True
 

@@ -12,9 +12,19 @@ import json
 def online_bot():
     strategies = Strategies.objects.filter(status='Online')
 
+    # проверяю есть ли текущий курс для варианта,  если нет то отправляю quote =False, чтоб грузил новые цены
+    quote=False
+
     for strat in strategies:
         for varian in Variants.objects.filter(type=strat.name):
-            g.get_strat_file(strat).run_online(varian)
+            if quote and varian.pair == quote['symbol']:
+                g.get_strat_file(strat).run_online(varian=varian, quote=quote)
+
+                ic('не гружу цены')
+            else:
+                quote = g.get_strat_file(strat).run_online(varian=varian, quote=False)
+                ic('гружу цены')
+
 
 
 

@@ -20,6 +20,7 @@ def execute_strat(d):
     if not Options.objects.filter(varian=d['varian']).exists():
         # back_perfom.check_buy_option
         inform.me('BOT - нет опциона')
+        ic(d['varian'])
         exit()
         return
     else:
@@ -120,10 +121,17 @@ def run(df: pd.DataFrame, statistic=False):
     g.varian.save()
 
 
-def run_online(varian=False):
+def run_online(varian=False, quote=False):
     d = {}
-    d['quote'] = api.get_quote(exchange=varian.exchange, pair=varian.pair)
+    if not quote:
+        d['quote'] = api.get_quote(exchange=varian.exchange, pair=varian.pair)
+    else:
+        d['quote']=quote
 
     d['varian'] = varian
     d = prepare_variables(d)
     execute_strat(d)
+
+    quote = d['quote']
+
+    return quote

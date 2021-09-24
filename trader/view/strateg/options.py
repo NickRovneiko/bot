@@ -28,15 +28,14 @@ def execute_strat(d):
             return
 
         # проверка продажи
-
         check_sell(d)
 
-        # проверка баланса
+        # проверка баланса b gjregrb
         if not check_balance(d):
             return
-
-        # проверка покупки
-        check_buy(d)
+        else:
+            # проверка покупки
+            check_buy(d)
 
     return
 

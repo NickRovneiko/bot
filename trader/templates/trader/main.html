@@ -31,7 +31,7 @@
             {% for varian in list_varians %}
             <tr>
 
-                <th><a href=/variant?varian={{varian.id}}>{{varian.pair}}</a> {% if varian.limit_orders_buy %} LIMITED
+                <th><a href=/variant?varian={{varian.id}}>{{varian.name}}</a> {% if varian.limit_orders_buy %} LIMITED
                     {% elif  varian.stop_loss %} stop - {{varian.stop_loss}} {% endif%}
                 </th>
                 <th><a href="/admin/trader/variants/{{varian.id}}/change/">{{varian.type}}</a></th>

@@ -19,9 +19,6 @@ def execute_strat(d):
 
     if not Options.objects.filter(varian=d['varian']).exists():
         # back_perfom.check_buy_option
-        inform.me('BOT - нет опциона')
-        ic(d['varian'])
-        exit()
         return
     else:
         if not d['positions'].exists():

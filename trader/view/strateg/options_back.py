@@ -1,4 +1,4 @@
-from trader.view import g
+from trader.view import g, back_perfom, store
 
 from trader.models import Trades, Position, Logs
 
@@ -14,22 +14,29 @@ pd.options.display.max_columns = None
 
 
 def execute_strat():
-    if g.df_positions.empty:
+
+    if not g.options or g.options.a:
+
+        # Options.objects.filter(varian=d['varian']).exists():
+        back_perfom.check_buy_option
+
+        return
+    else:
+        if g.df_positions.empty:
+            check_buy()
+            return
+
+        # проверка продажи
+        check_sell()
+
+        # проверка баланса
+        if not check_balance():
+            return
+
+        # проверка покупки
         check_buy()
-        return
-
-    # проверка продажи
-    check_sell()
-
-    # проверка баланса
-    if not check_balance():
-        return
-
-    # проверка покупки
-    check_buy()
 
     return
-
 
 def check_sell():
     # проверка продажи
@@ -159,22 +166,36 @@ def close_positions(row=False, stop=False):
     return
 
 
-def stop_loss():
-    if 100 - g.quote.open / g.high_price.buy_price*100 - 10 > g.varian.range:
-        close_positions(row=g.high_price, stop=True)
+def validate_g_and_df(df: pd.DataFrame):
+    df = df.dropna()
 
-def lumite_buy_downtrend():
-    # делаем задним числом  вставки на покупку вверх по стакану
-
-    i = 1
-    while g.quote.open > (g.df_positions['buy_price'].iloc[-1] + g.step * i):
-        try_buy(g.df_positions['buy_price'].iloc[-1] + g.step * i)
-        i = i + 1
-        if not check_balance() or not g.varian.limit_orders_buy:
-            break
+    return df
 
 
-def prepare_variables(df_prices=False):
-        g.step = g.get_step(df_prices.iloc[0].open)
-        g.amount = g.varian.start_balance / g.varian.deals
-        g.high_price = False
+def graphs():
+    return
+
+
+def update_variables():
+    g.step = g.get_step(g.quote.close)
+    g.amount = g.varian.start_balance / g.varian.deals
+
+
+def run_back(df_prices=False, statistic=False):
+    df_prices = validate_g_and_df(df_prices)
+
+
+    for idx, price in df_prices.iterrows():
+        g.quote = price
+        ic(g.quote)
+
+        update_variables()
+        execute_strat()
+
+    if not statistic:
+        store.positions_save(g.df_positions.append(g.close_positions))
+    g.varian.finish = True
+    g.varian.save()
+
+    return
+

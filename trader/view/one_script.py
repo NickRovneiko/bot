@@ -22,9 +22,7 @@ from trader.view import store
 def startBot():
     from trader.view import engine
 
-    from trader.models import Variants
-
-    engine.attempt()
+    engine.backtesting_strategy()
 
 
 def start_ploty():

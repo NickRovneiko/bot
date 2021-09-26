@@ -6,7 +6,7 @@ import pandas as pd
 
 from django_pandas.io import read_frame
 
-from trader.models import History, Position, Logs, Tests
+from trader.models import History, Position, Logs, Tests, Options
 
 from . import prices
 
@@ -98,6 +98,15 @@ def get_df_postions(varian_name='kucoin_1_25_0.4', active=True):
 
     return df_positions
 
+def get_df_options(varian_name='kucoin_1_25_0.4', active=True):
+    if Options.objects.filter(varian=varian_name, active=active).exists():
+        positions = Options.objects.filter(varian=varian_name)
+        df_options = read_frame(positions)
+    else:
+        # создаю пустой df
+        df_options = pd.DataFrame(columns=[column.name for column in Position._meta.get_fields()])
+
+    return df_options
 
 def test_save(varian=False, win_rate=False, profit=False, text=False):
     Tests(

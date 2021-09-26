@@ -49,6 +49,11 @@ def g_try_sell():
 
     return
 
+def g_check_buy_option():
+    return
+
+
+
 
 def g_close_positions(row=False, stop=False):
     g.df_positions = g.df_positions.drop([row.name])

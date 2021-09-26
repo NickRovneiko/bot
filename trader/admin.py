@@ -80,7 +80,7 @@ admin.site.register(Tests, TestsAdmin)
 
 class OptionsAdmin(admin.ModelAdmin):
     list_display = ['varian', 'buy_price', 'expiration' ,'strike']
-    list_filter = []
+    list_filter = ['active']
     search_fields = []
     actions_on_bottom = True
     actions_on_top = True

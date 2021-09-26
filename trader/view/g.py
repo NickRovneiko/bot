@@ -49,4 +49,7 @@ def get_strat_file(strat=False):
     if strat and strat.name == 'options':
         from trader.view.strateg import options as strategy_file
 
+    if strat and strat.name == 'options_back':
+        from trader.view.strateg import options_back as strategy_file
+
     return strategy_file

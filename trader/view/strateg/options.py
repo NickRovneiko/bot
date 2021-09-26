@@ -17,7 +17,7 @@ pd.options.display.max_columns = None
 def execute_strat(d):
     d['positions'] = Position.objects.filter(varian=d['varian'], active=True)
 
-    if not Options.objects.filter(varian=d['varian']).exists():
+    if not Options.objects.filter(varian=d['varian'], active=True).exists():
         # back_perfom.check_buy_option
         d['varian'].update(finish=True)
         inform.me(f"{d['varian'].name} отключил,  без опциона")

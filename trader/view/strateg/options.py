@@ -19,6 +19,8 @@ def execute_strat(d):
 
     if not Options.objects.filter(varian=d['varian']).exists():
         # back_perfom.check_buy_option
+        Options.objects.filter(varian=d['varian'].update(active=False))
+        inform.me(f"{d['varian'].name} отключил,  без опциона")
         return
     else:
         if not d['positions'].exists():
